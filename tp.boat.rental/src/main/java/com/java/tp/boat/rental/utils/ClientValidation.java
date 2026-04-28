@@ -32,19 +32,19 @@ public final class ClientValidation {
         return validatedEmail;
     }
 
-    public static Long validatePhoneNumber(Long phoneNumber) throws InvalidClientException {
-        if (phoneNumber == null || phoneNumber.toString().isBlank()) {
-            throw new InvalidClientException("Phone number cannot be blank");
+    public static String validatePhoneNumber(String phoneNumber) throws InvalidClientException {
+        if (phoneNumber == null) {
+            return null;
         }
-        if (!phoneNumber.toString().matches("^\\d{10}$")) {
-            throw new InvalidClientException("Phone number must be 10 digits");
+        if (phoneNumber.isBlank()) {
+            throw new InvalidClientException("Phone number cannot be blank");
         }
         return phoneNumber;
     }
 
     public static Boolean validateHasLicense(Boolean hasLicense) throws InvalidClientException {
         if (hasLicense == null) {
-            throw new InvalidClientException("Has license cannot be null");
+            return false;
         }
         return hasLicense;
     }

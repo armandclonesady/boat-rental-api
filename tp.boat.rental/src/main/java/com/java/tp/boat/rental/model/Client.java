@@ -27,7 +27,7 @@ public class Client {
     private String email;
 
     @Column(length = 10)
-    private Long phoneNumber;
+    private String phoneNumber;
 
     private Boolean hasLicense;
     

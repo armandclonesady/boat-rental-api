@@ -55,15 +55,20 @@ public class ClientController {
     @PostMapping("/")
     public ResponseEntity<?> postClient(@RequestBody Client client) {
         try {;
-            return ResponseEntity.ok(clientService.createClient(client));
+            return ResponseEntity.status(HttpStatus.CREATED).body(clientService.createClient(client));
         } catch (InvalidClientException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }   
     }
 
     @DeleteMapping("/{id}")
-    public Client deleteClient(@PathVariable Long id) {
-        return clientService.deleteClientById(id);
+    public ResponseEntity<?> deleteClient(@PathVariable Long id) {
+        Client deletedClient = clientService.deleteClientById(id);
+        if (deletedClient == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(String.format("No client associated with id %d", id));
+        } else {
+            return ResponseEntity.ok(deletedClient);
+        }
     }
 
     @PutMapping("/{id}")
