@@ -14,6 +14,10 @@ import lombok.Data;
 @Entity
 @Table(name = "boats")
 public class Boat {
+
+    public static float DEFAULT_DAILY_RATE = 100.0f;
+    public static float DEFAULT_DEPOSIT = 200.0f;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long bid;
@@ -24,11 +28,12 @@ public class Boat {
     @Enumerated(EnumType.ORDINAL)
     private BoatTypes type;
 
-
+    @Column(nullable = false)
     private Integer maxCapacity;
 
+    @Column(nullable = false)
     private Float length;
-
+    
     private Float dailyRate;
 
     private Float deposit;

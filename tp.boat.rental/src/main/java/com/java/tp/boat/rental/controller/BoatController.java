@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.java.tp.boat.rental.exceptions.InvalidBoatException;
 import com.java.tp.boat.rental.model.Boat;
+import com.java.tp.boat.rental.model.Client;
 import com.java.tp.boat.rental.service.BoatService;
 
 import lombok.Data;
@@ -54,15 +55,20 @@ public class BoatController {
     @PostMapping("/")
     public ResponseEntity<?> postBoat(@RequestBody Boat boat) {
         try {
-            return ResponseEntity.ok(boatService.createBoat(boat));
+            return ResponseEntity.status(HttpStatus.CREATED).body(boatService.createBoat(boat));
         } catch (InvalidBoatException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 
     @DeleteMapping("/{id}")
-    public Boat deleteBoat(@PathVariable Long id) {
-        return boatService.deleteBoatById(id);
+    public ResponseEntity<?> deleteBoat(@PathVariable Long id) {
+        Boat deletedBoat = boatService.deleteBoatById(id);
+        if (deletedBoat == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(String.format("No boat associated with id %d", id));
+        } else {
+            return ResponseEntity.ok(deletedBoat);
+        }
     }
 
     @PutMapping("/{id}")
@@ -70,7 +76,7 @@ public class BoatController {
         try {
             return ResponseEntity.ok(boatService.updateBoat(id, boat));
         } catch (InvalidBoatException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 }
