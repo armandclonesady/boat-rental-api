@@ -1,6 +1,5 @@
 package com.java.tp.boat.rental.controller;
 
-import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,7 +9,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.java.tp.boat.rental.exceptions.BoatDoesNotExistException;
 import com.java.tp.boat.rental.exceptions.InvalidBoatException;
-import com.java.tp.boat.rental.model.entity.BoatEntity;
 import com.java.tp.boat.rental.model.request.BoatCreationRequest;
 import com.java.tp.boat.rental.model.request.BoatUpdateRequest;
 import com.java.tp.boat.rental.model.response.BoatResponse;
