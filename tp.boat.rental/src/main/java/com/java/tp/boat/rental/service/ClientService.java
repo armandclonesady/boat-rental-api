@@ -14,10 +14,12 @@ import com.java.tp.boat.rental.model.response.ClientResponse;
 import com.java.tp.boat.rental.repository.ClientRepository;
 import com.java.tp.boat.rental.utils.mappers.ClientMapper;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Service
 @Data
+@AllArgsConstructor
 public class ClientService {
     
     private ClientRepository clientRepository;
@@ -59,14 +61,11 @@ public class ClientService {
 
     public ClientResponse updateClient(Long id, ClientRequest clientRequest) throws InvalidClientException {
         Optional<ClientEntity> existingClient = clientRepository.findById(id);
-        if (existingClient.isEmpty()) {
-            return createClient(clientRequest);
-        } else {
-            Client client = clientMapper.toDomain(clientRequest);
-            client.updateWith(clientMapper.toDomain(clientRequest));
-            ClientEntity updatedClient = clientRepository.save(clientMapper.toEntity(client));
-            return clientMapper.toResponse(updatedClient);
-        }
+        Client existingClientDomain = clientMapper.toDomain(existingClient.get());
+        Client client = clientMapper.toDomain(clientRequest);
+        existingClientDomain.updateWith(client);
+        ClientEntity updatedClient = clientRepository.save(clientMapper.toEntity(existingClientDomain));
+        return clientMapper.toResponse(updatedClient);
     } 
 
 

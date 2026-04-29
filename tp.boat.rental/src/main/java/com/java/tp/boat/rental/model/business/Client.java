@@ -1,7 +1,4 @@
 package com.java.tp.boat.rental.model.business;
-
-import com.java.tp.boat.rental.model.response.ClientResponse;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -14,8 +11,12 @@ public class Client {
     private String email;
     private String phoneNumber;
     private Boolean hasLicense;
-    public ClientResponse updateWith(Client newClient) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'updateWith'");
+
+    public void updateWith(Client newClient) {
+        this.firstName = newClient.getFirstName() != null ? newClient.getFirstName() : this.firstName;
+        this.lastName = newClient.getLastName() != null ? newClient.getLastName() : this.lastName;
+        this.email = newClient.getEmail() != null ? newClient.getEmail() : this.email;
+        this.phoneNumber = newClient.getPhoneNumber() != null ? newClient.getPhoneNumber() : this.phoneNumber;
+        this.hasLicense = newClient.getHasLicense() != null ? newClient.getHasLicense() : this.hasLicense;
     }
 }

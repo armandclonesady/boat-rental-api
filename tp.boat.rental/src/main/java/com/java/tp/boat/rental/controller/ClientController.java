@@ -1,8 +1,5 @@
 package com.java.tp.boat.rental.controller;
 
-import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -12,10 +9,13 @@ import org.springframework.web.bind.annotation.RestController;
 import com.java.tp.boat.rental.exceptions.ClientDoesNotExistException;
 import com.java.tp.boat.rental.exceptions.InvalidClientException;
 import com.java.tp.boat.rental.model.request.ClientRequest;
+import com.java.tp.boat.rental.model.request.ClientUpdateRequest;
 import com.java.tp.boat.rental.model.response.ClientResponse;
 import com.java.tp.boat.rental.service.ClientService;
+import com.java.tp.boat.rental.utils.mappers.ClientMapper;
 
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -31,10 +31,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 @Controller
 @Data
 @RestController
+@AllArgsConstructor
 @RequestMapping("/clients")
 public class ClientController {
     
-    @Autowired
     private ClientService clientService;
 
     @GetMapping("/")
@@ -58,8 +58,9 @@ public class ClientController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ClientResponse> putClient(@PathVariable Long id, @RequestBody ClientRequest client) throws InvalidClientException {
-        return ResponseEntity.ok(clientService.updateClient(id, client));
+    public ResponseEntity<ClientResponse> putClient(@PathVariable Long id, @RequestBody @Valid ClientUpdateRequest client) throws InvalidClientException {
+        ClientRequest clientRequest = ClientMapper.toClientRequest(client);
+        return ResponseEntity.ok(clientService.updateClient(id, clientRequest));
     }
     
 }

@@ -2,7 +2,6 @@ package com.java.tp.boat.rental.service;
 
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.java.tp.boat.rental.exceptions.InvalidBoatException;
@@ -10,12 +9,14 @@ import com.java.tp.boat.rental.model.entity.BoatEntity;
 import com.java.tp.boat.rental.repository.BoatRepository;
 import com.java.tp.boat.rental.utils.Validation;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Service
 @Data
+@AllArgsConstructor
 public class BoatService {
-    @Autowired
+
     private BoatRepository boatRepository;
 
     public Optional<BoatEntity> getBoatById(Long id) {

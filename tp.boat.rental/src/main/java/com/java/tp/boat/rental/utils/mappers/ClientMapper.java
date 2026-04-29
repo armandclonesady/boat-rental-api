@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import com.java.tp.boat.rental.model.business.Client;
 import com.java.tp.boat.rental.model.entity.ClientEntity;
 import com.java.tp.boat.rental.model.request.ClientRequest;
+import com.java.tp.boat.rental.model.request.ClientUpdateRequest;
 import com.java.tp.boat.rental.model.response.ClientResponse;
 
 @Component
@@ -71,5 +72,15 @@ public class ClientMapper {
             client.getHasLicense()
         );
         return clientResponse;
+    }
+
+    public static ClientRequest toClientRequest(ClientUpdateRequest client) {
+        ClientRequest clientRequest = new ClientRequest();
+        clientRequest.setFirstName(client.getFirstName());
+        clientRequest.setLastName(client.getLastName());
+        clientRequest.setEmail(client.getEmail());
+        clientRequest.setPhoneNumber(client.getPhoneNumber());
+        clientRequest.setHasLicense(client.getHasLicense());
+        return clientRequest;
     }
 }
