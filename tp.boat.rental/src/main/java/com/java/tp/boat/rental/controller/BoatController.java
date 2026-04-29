@@ -8,10 +8,15 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.java.tp.boat.rental.exceptions.BoatDoesNotExistException;
 import com.java.tp.boat.rental.exceptions.InvalidBoatException;
 import com.java.tp.boat.rental.model.entity.BoatEntity;
+import com.java.tp.boat.rental.model.request.BoatCreationRequest;
+import com.java.tp.boat.rental.model.request.BoatUpdateRequest;
+import com.java.tp.boat.rental.model.response.BoatResponse;
 import com.java.tp.boat.rental.service.BoatService;
 
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -34,48 +39,27 @@ public class BoatController {
     private BoatService boatService;
 
     @GetMapping("/")
-    public Iterable<BoatEntity> getAllBots() {
+    public Iterable<BoatResponse> getAllBots() {
         return boatService.getAllBoats();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getBoatById(@PathVariable Long id) {
-        if (id < 0) {
-            return ResponseEntity.badRequest().body("ID must be positive");
-        }
-        Optional<BoatEntity> boat = boatService.getBoatById(id);
-        if (boat.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(String.format("No boat associated with id %d", id));
-        } else {
-            return ResponseEntity.ok(boat);
-        }
+    public ResponseEntity<BoatResponse> getBoatById(@PathVariable Long id) throws BoatDoesNotExistException {
+        return ResponseEntity.ok(boatService.getBoatById(id));
     }
 
     @PostMapping("/")
-    public ResponseEntity<?> postBoat(@RequestBody BoatEntity boat) {
-        try {
-            return ResponseEntity.status(HttpStatus.CREATED).body(boatService.createBoat(boat));
-        } catch (InvalidBoatException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
+    public ResponseEntity<BoatResponse> postBoat(@RequestBody @Valid BoatCreationRequest boatRequest) throws InvalidBoatException {
+        return ResponseEntity.status(HttpStatus.CREATED).body(boatService.createBoat(boatRequest));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteBoat(@PathVariable Long id) {
-        BoatEntity deletedBoat = boatService.deleteBoatById(id);
-        if (deletedBoat == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(String.format("No boat associated with id %d", id));
-        } else {
-            return ResponseEntity.ok(deletedBoat);
-        }
+    public ResponseEntity<BoatResponse> deleteBoat(@PathVariable Long id) throws BoatDoesNotExistException {
+        return ResponseEntity.ok(boatService.deleteBoatById(id));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> putBoat(@PathVariable Long id, @RequestBody BoatEntity boat) {
-        try {
-            return ResponseEntity.ok(boatService.updateBoat(id, boat));
-        } catch (InvalidBoatException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
+    public ResponseEntity<BoatResponse> putBoat(@PathVariable Long id, @RequestBody @Valid BoatUpdateRequest boatUpdateRequest) throws InvalidBoatException {
+        return ResponseEntity.ok(boatService.updateBoat(id, boatUpdateRequest));
     }
 }

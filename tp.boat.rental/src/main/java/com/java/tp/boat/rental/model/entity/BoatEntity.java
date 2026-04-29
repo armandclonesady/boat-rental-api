@@ -15,9 +15,6 @@ import lombok.Data;
 @Table(name = "boats")
 public class BoatEntity {
 
-    public static float DEFAULT_DAILY_RATE = 100.0f;
-    public static float DEFAULT_DEPOSIT = 200.0f;
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long bid;

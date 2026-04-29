@@ -4,7 +4,7 @@ import org.springframework.stereotype.Component;
 
 import com.java.tp.boat.rental.model.business.Client;
 import com.java.tp.boat.rental.model.entity.ClientEntity;
-import com.java.tp.boat.rental.model.request.ClientRequest;
+import com.java.tp.boat.rental.model.request.ClientCreateRequest;
 import com.java.tp.boat.rental.model.request.ClientUpdateRequest;
 import com.java.tp.boat.rental.model.response.ClientResponse;
 
@@ -16,7 +16,7 @@ public class ClientMapper {
      * ClientRequest -> Client (Domain Model) -> ClientEntity (Database Entity) -> ClientResponse (API Response)
      */
     
-    public Client toDomain(ClientRequest clientRequest) {
+    public Client toDomain(ClientCreateRequest clientRequest) {
         Client client = new Client(
             clientRequest.getCid(),
             clientRequest.getFirstName(),
@@ -74,8 +74,8 @@ public class ClientMapper {
         return clientResponse;
     }
 
-    public static ClientRequest toClientRequest(ClientUpdateRequest client) {
-        ClientRequest clientRequest = new ClientRequest();
+    public static ClientCreateRequest toClientRequest(ClientUpdateRequest client) {
+        ClientCreateRequest clientRequest = new ClientCreateRequest();
         clientRequest.setFirstName(client.getFirstName());
         clientRequest.setLastName(client.getLastName());
         clientRequest.setEmail(client.getEmail());

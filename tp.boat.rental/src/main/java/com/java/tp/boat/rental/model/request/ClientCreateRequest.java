@@ -1,7 +1,5 @@
 package com.java.tp.boat.rental.model.request;
 
-import org.hibernate.annotations.NotFound;
-
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -10,7 +8,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
-public class ClientRequest {
+public class ClientCreateRequest {
     @Null
     private Long cid;
 
