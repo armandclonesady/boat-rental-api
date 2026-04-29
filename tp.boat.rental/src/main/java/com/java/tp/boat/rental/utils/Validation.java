@@ -2,8 +2,8 @@ package com.java.tp.boat.rental.utils;
 
 import com.java.tp.boat.rental.exceptions.InvalidBoatException;
 import com.java.tp.boat.rental.exceptions.InvalidClientException;
-import com.java.tp.boat.rental.model.Boat;
-import com.java.tp.boat.rental.model.Client;
+import com.java.tp.boat.rental.model.entity.BoatEntity;
+import com.java.tp.boat.rental.model.entity.ClientEntity;
 
 public final class Validation {
 
@@ -14,7 +14,7 @@ public final class Validation {
      * @return the validated client
      * @throws InvalidClientException if the client is invalid
      */
-    public static Client validate(Client client) throws InvalidClientException {
+    public static ClientEntity validate(ClientEntity client) throws InvalidClientException {
         client.setFirstName(ClientValidation.validateFirstName(client.getFirstName()));
         client.setLastName(ClientValidation.validateLastName(client.getLastName()));
         client.setEmail(ClientValidation.validateEmail(client.getEmail()));
@@ -29,7 +29,7 @@ public final class Validation {
      * @return the validated boat
      * @throws InvalidBoatException if the boat is invalid
      */
-    public static Boat validate(Boat boat) throws InvalidBoatException {
+    public static BoatEntity validate(BoatEntity boat) throws InvalidBoatException {
         boat.setName(BoatValidation.validateName(boat.getName()));
         boat.setType(BoatValidation.validateType(boat.getType()));
         boat.setMaxCapacity(BoatValidation.validateMaxCapacity(boat.getMaxCapacity()));
@@ -46,7 +46,7 @@ public final class Validation {
      * @param updatedClient the new client with the updated values. Only the fields that are not null will be updated in the existing client.
      * @return the updated client
      */
-    public static Client updateClient(Client existingClient, Client updatedClient) {
+    public static ClientEntity updateClient(ClientEntity existingClient, ClientEntity updatedClient) {
         if (updatedClient.getFirstName() != null) {
             existingClient.setFirstName(updatedClient.getFirstName());
         }
@@ -66,7 +66,7 @@ public final class Validation {
         return existingClient;
     }
 
-    public static Boat updateBoat(Boat existingBoat, Boat updatedBoat) {
+    public static BoatEntity updateBoat(BoatEntity existingBoat, BoatEntity updatedBoat) {
         if (updatedBoat.getName() != null) {
             existingBoat.setName(updatedBoat.getName());
         }

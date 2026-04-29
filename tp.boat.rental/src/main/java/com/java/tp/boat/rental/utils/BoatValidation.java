@@ -1,8 +1,8 @@
 package com.java.tp.boat.rental.utils;
 
 import com.java.tp.boat.rental.exceptions.InvalidBoatException;
-import com.java.tp.boat.rental.model.Boat;
-import com.java.tp.boat.rental.model.BoatTypes;
+import com.java.tp.boat.rental.model.entity.BoatEntity;
+import com.java.tp.boat.rental.model.entity.BoatTypes;
 
 public final class BoatValidation {
     
@@ -42,7 +42,7 @@ public final class BoatValidation {
 
     public static Float validateDailyRate(Float dailyRate) throws InvalidBoatException {
         if (dailyRate == null || dailyRate.toString().isBlank()) {
-            return Boat.DEFAULT_DAILY_RATE;
+            return BoatEntity.DEFAULT_DAILY_RATE;
         }
         if (dailyRate <= 0) {
             throw new InvalidBoatException("Boat daily rate must be greater than 0");
@@ -52,7 +52,7 @@ public final class BoatValidation {
 
     public static Float validateDeposit(Float deposit) throws InvalidBoatException{
         if (deposit == null || deposit.toString().isBlank()) {
-            return Boat.DEFAULT_DEPOSIT;
+            return BoatEntity.DEFAULT_DEPOSIT;
         }
         if (deposit < 0) {
             throw new InvalidBoatException("Boat deposit cannot be negative");

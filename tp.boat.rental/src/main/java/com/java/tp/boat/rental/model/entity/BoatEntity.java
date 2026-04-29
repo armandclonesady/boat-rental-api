@@ -1,4 +1,4 @@
-package com.java.tp.boat.rental.model;
+package com.java.tp.boat.rental.model.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -13,7 +13,7 @@ import lombok.Data;
 @Data
 @Entity
 @Table(name = "boats")
-public class Boat {
+public class BoatEntity {
 
     public static float DEFAULT_DAILY_RATE = 100.0f;
     public static float DEFAULT_DEPOSIT = 200.0f;

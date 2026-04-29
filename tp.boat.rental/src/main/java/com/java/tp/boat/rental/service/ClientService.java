@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.java.tp.boat.rental.exceptions.InvalidClientException;
-import com.java.tp.boat.rental.model.Client;
+import com.java.tp.boat.rental.model.entity.ClientEntity;
 import com.java.tp.boat.rental.repository.ClientRepository;
 import com.java.tp.boat.rental.utils.Validation;
 
@@ -19,37 +19,37 @@ public class ClientService {
     @Autowired
     private ClientRepository clientRepository;
 
-    public Optional<Client> getClientById(Long id) {
+    public Optional<ClientEntity> getClientById(Long id) {
         return clientRepository.findById(id);
     }
 
-    public Iterable<Client> getAllClients() {
+    public Iterable<ClientEntity> getAllClients() {
         return clientRepository.findAll();
     }
 
-    public Client createClient(Client client) throws InvalidClientException {
-        Client validatedClient = Validation.validate(client);
+    public ClientEntity createClient(ClientEntity client) throws InvalidClientException {
+        ClientEntity validatedClient = Validation.validate(client);
         return clientRepository.save(validatedClient);
     }
 
-    public void deleteClient(Client client) {
+    public void deleteClient(ClientEntity client) {
         clientRepository.delete(client);
     }
 
-    public Client deleteClientById(Long id) {
-        Optional<Client> clientToBeDeleted = clientRepository.findById(id);
+    public ClientEntity deleteClientById(Long id) {
+        Optional<ClientEntity> clientToBeDeleted = clientRepository.findById(id);
         if (clientToBeDeleted.isPresent()) {
             clientRepository.delete(clientToBeDeleted.get());
         }
         return clientToBeDeleted.get();
     }
 
-    public Client editClient(Client existingClient, Client newClient) throws InvalidClientException{
+    public ClientEntity editClient(ClientEntity existingClient, ClientEntity newClient) throws InvalidClientException{
         return clientRepository.save(Validation.updateClient(existingClient, Validation.validate(newClient)));
     }
 
-    public Client updateClient(Long id, Client client) throws InvalidClientException {
-        Optional<Client> existingClient = clientRepository.findById(id);
+    public ClientEntity updateClient(Long id, ClientEntity client) throws InvalidClientException {
+        Optional<ClientEntity> existingClient = clientRepository.findById(id);
         if (existingClient.isEmpty()) {
             return createClient(client);
         } else {

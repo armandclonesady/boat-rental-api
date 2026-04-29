@@ -1,4 +1,4 @@
-package com.java.tp.boat.rental.model;
+package com.java.tp.boat.rental.model.entity;
 
 import jakarta.persistence.GenerationType;
 
@@ -16,7 +16,7 @@ import lombok.Data;
 @Data
 @Entity
 @Table(name = "reservations")
-public class Reservations {
+public class ReservationsEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,11 +24,11 @@ public class Reservations {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cid")
-    private Client cid;
+    private ClientEntity cid;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "bid")
-    private Boat bid;
+    private BoatEntity bid;
 
     private int amountOfPeople;
 

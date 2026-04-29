@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.java.tp.boat.rental.exceptions.InvalidBoatException;
-import com.java.tp.boat.rental.model.Boat;
-import com.java.tp.boat.rental.model.Client;
+import com.java.tp.boat.rental.model.entity.BoatEntity;
+import com.java.tp.boat.rental.model.entity.ClientEntity;
 import com.java.tp.boat.rental.service.BoatService;
 
 import lombok.Data;
@@ -35,7 +35,7 @@ public class BoatController {
     private BoatService boatService;
 
     @GetMapping("/")
-    public Iterable<Boat> getAllBots() {
+    public Iterable<BoatEntity> getAllBots() {
         return boatService.getAllBoats();
     }
 
@@ -44,7 +44,7 @@ public class BoatController {
         if (id < 0) {
             return ResponseEntity.badRequest().body("ID must be positive");
         }
-        Optional<Boat> boat = boatService.getBoatById(id);
+        Optional<BoatEntity> boat = boatService.getBoatById(id);
         if (boat.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(String.format("No boat associated with id %d", id));
         } else {
@@ -53,7 +53,7 @@ public class BoatController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<?> postBoat(@RequestBody Boat boat) {
+    public ResponseEntity<?> postBoat(@RequestBody BoatEntity boat) {
         try {
             return ResponseEntity.status(HttpStatus.CREATED).body(boatService.createBoat(boat));
         } catch (InvalidBoatException e) {
@@ -63,7 +63,7 @@ public class BoatController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteBoat(@PathVariable Long id) {
-        Boat deletedBoat = boatService.deleteBoatById(id);
+        BoatEntity deletedBoat = boatService.deleteBoatById(id);
         if (deletedBoat == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(String.format("No boat associated with id %d", id));
         } else {
@@ -72,7 +72,7 @@ public class BoatController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> putBoat(@PathVariable Long id, @RequestBody Boat boat) {
+    public ResponseEntity<?> putBoat(@PathVariable Long id, @RequestBody BoatEntity boat) {
         try {
             return ResponseEntity.ok(boatService.updateBoat(id, boat));
         } catch (InvalidBoatException e) {

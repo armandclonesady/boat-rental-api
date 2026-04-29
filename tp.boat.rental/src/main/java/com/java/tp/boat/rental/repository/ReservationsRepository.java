@@ -2,6 +2,6 @@ package com.java.tp.boat.rental.repository;
 
 import org.springframework.data.repository.CrudRepository;
 
-import com.java.tp.boat.rental.model.Reservations;
+import com.java.tp.boat.rental.model.entity.ReservationsEntity;
 
-public interface ReservationsRepository extends CrudRepository<Reservations, Long>{ }
+public interface ReservationsRepository extends CrudRepository<ReservationsEntity, Long>{ }
