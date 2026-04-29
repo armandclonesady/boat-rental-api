@@ -1,7 +1,5 @@
 package com.java.tp.boat.rental.model.request;
 
-import com.java.tp.boat.rental.model.entity.BoatTypes;
-
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
@@ -15,7 +13,8 @@ public class BoatRequest {
     private String name;
     
     @NotBlank(message = "Type information is required")
-    private BoatTypes type;
+    @Max(message = "Type cannot be longer than 20 characters", value = 20)
+    private String type;
 
     @NotBlank(message = "Max capacity information is required")
     @Positive(message = "Max capacity must be a positive number")

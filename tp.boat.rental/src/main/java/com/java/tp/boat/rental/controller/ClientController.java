@@ -9,10 +9,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.java.tp.boat.rental.exceptions.ClientDoesNotExistException;
 import com.java.tp.boat.rental.exceptions.InvalidClientException;
-import com.java.tp.boat.rental.model.entity.ClientEntity;
+import com.java.tp.boat.rental.model.request.ClientRequest;
+import com.java.tp.boat.rental.model.response.ClientResponse;
 import com.java.tp.boat.rental.service.ClientService;
 
+import jakarta.validation.Valid;
 import lombok.Data;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -35,49 +38,28 @@ public class ClientController {
     private ClientService clientService;
 
     @GetMapping("/")
-    public Iterable<ClientEntity> getAllClient() {
+    public Iterable<ClientResponse> getAllClient() {
         return clientService.getAllClients();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getClientById(@PathVariable Long id) {
-        if (id < 0) {
-            return ResponseEntity.badRequest().body("ID must be positive");
-        }
-        Optional<ClientEntity> client = clientService.getClientById(id);
-        if (client.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(String.format("No client associated with id %d", id));
-        } else {
-            return ResponseEntity.ok(client);
-        }
+    public ResponseEntity<ClientResponse> getClientById(@PathVariable Long id) throws ClientDoesNotExistException {
+        return ResponseEntity.ok(clientService.getClientById(id));
     }
 
     @PostMapping("/")
-    public ResponseEntity<?> postClient(@RequestBody ClientEntity client) {
-        try {
-            return ResponseEntity.status(HttpStatus.CREATED).body(clientService.createClient(client));
-        } catch (InvalidClientException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }   
+    public ResponseEntity<ClientResponse> postClient(@RequestBody @Valid ClientRequest clientRequest) throws InvalidClientException {
+            return ResponseEntity.status(HttpStatus.CREATED).body(clientService.createClient(clientRequest));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteClient(@PathVariable Long id) {
-        ClientEntity deletedClient = clientService.deleteClientById(id);
-        if (deletedClient == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(String.format("No client associated with id %d", id));
-        } else {
-            return ResponseEntity.ok(deletedClient);
-        }
+    public ResponseEntity<ClientResponse> deleteClient(@PathVariable Long id) throws ClientDoesNotExistException {
+        return ResponseEntity.ok(clientService.deleteClientById(id));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> putClient(@PathVariable Long id, @RequestBody ClientEntity client) throws InvalidClientException {
-        try {
-            return ResponseEntity.ok(clientService.updateClient(id, client));
-        } catch (InvalidClientException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
+    public ResponseEntity<ClientResponse> putClient(@PathVariable Long id, @RequestBody ClientRequest client) throws InvalidClientException {
+        return ResponseEntity.ok(clientService.updateClient(id, client));
     }
     
 }

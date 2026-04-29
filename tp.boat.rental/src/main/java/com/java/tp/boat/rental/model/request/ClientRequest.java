@@ -1,4 +1,5 @@
 package com.java.tp.boat.rental.model.request;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotBlank;
@@ -6,7 +7,8 @@ import lombok.Data;
 
 @Data
 public class ClientRequest {
-    
+    private Long cid;
+
     @NotBlank(message = "First name cannot be blank")
     @Max(message = "First name cannot be longer than 100 characters", value = 100)
     private String firstName;
