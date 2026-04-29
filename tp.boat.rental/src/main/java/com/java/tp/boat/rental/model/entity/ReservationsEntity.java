@@ -30,7 +30,7 @@ public class ReservationsEntity {
     @JoinColumn(name = "bid")
     private BoatEntity bid;
 
-    private int amountOfPeople;
+    private Integer amountOfPeople;
 
     private Date startTime;
 
