@@ -116,8 +116,9 @@ public class Reservation {
         this.amountOfPeople = domainFromRequestCreation.getAmountOfPeople() != null ? domainFromRequestCreation.getAmountOfPeople() : this.amountOfPeople;
         this.startTime = domainFromRequestCreation.getStartTime() != null ? domainFromRequestCreation.getStartTime() : this.startTime;
         this.endTime = domainFromRequestCreation.getEndTime() != null ? domainFromRequestCreation.getEndTime() : this.endTime;
-        
-        this.reservationStatus = calculateReservationStatus(this.startTime, this.endTime);
+        if (!domainFromRequestCreation.getReservationStatus().equals(ReservationStatus.CANCELED)) {
+            this.reservationStatus = calculateReservationStatus(this.startTime, this.endTime);
+        }
         this.price = calculatePrice(this.boat, this.startTime, this.endTime);
     }
 }

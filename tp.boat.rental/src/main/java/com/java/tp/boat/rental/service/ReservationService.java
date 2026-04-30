@@ -84,4 +84,12 @@ public class ReservationService {
         reservationsRepository.save(reservationMapper.toEntityFromDomain(existingReservation));
         return existingReservation;
     }
+
+    public Reservation updateReservation(Long id, ReservationCreationRequest reservationUpdateRequest) throws ClientHasNoLicenseException, ReservationForTooManyPeopleException, ClientDoesNotExistException, BoatDoesNotExistException, ReservationStartIsAfterEndException, BoatAlreadyReservedForDateException {
+        Reservation existingReservation = getReservationById(id);
+        Reservation reservation = reservationMapper.toDomainFromRequestCreation(reservationUpdateRequest);
+        existingReservation.updateWith(reservation);
+        reservationsRepository.save(reservationMapper.toEntityFromDomain(existingReservation));
+        return existingReservation;
+    }
 }
