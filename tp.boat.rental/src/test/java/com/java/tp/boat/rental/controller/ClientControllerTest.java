@@ -33,7 +33,7 @@ public class ClientControllerTest {
         mockMvc.perform(post("/clients/")
         .contentType("application/json")
         .content(
-            "{ \"firstName\": \"John\", \"lastName\": \"Doe\", \"email\": \"john.doe@example.com\", \"phone\": \"1234567890\" }"
+            "{ \"firstName\": \"John\", \"lastName\": \"Doe\", \"email\": \"john.doe@example.com\", \"phoneNumber\": \"1234567890\" }"
         ))
         .andExpect(status().isCreated())
         .andDo(result -> {

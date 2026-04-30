@@ -38,6 +38,7 @@ public class BoatControllerTest {
         .andExpect(status().isCreated())
         .andDo(result -> {
             String response = result.getResponse().getContentAsString();
+            System.out.println("Response from POST /boats/: " + response);
             String idString = response.split("\"bid\":")[1].split(",")[0].trim();
             addedBoatId = Long.parseLong(idString);
         });

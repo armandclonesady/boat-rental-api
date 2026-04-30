@@ -43,4 +43,9 @@ public class ControllerAdvisor {
         });
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException e) {
+        return ResponseEntity.badRequest().body("IllegalArgumentException: " + e.getMessage());
+    }
 }

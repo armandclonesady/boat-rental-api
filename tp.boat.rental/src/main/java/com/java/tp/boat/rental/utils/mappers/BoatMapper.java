@@ -68,6 +68,7 @@ public class BoatMapper {
 
     public BoatResponse toResponse(Boat boat) {
         BoatResponse boatResponse = new BoatResponse(
+            boat.getBid(),
             boat.getName(),
             boat.getType().name(),
             boat.getMaxCapacity(),
@@ -81,6 +82,7 @@ public class BoatMapper {
 
     public BoatResponse toResponse(BoatEntity boat) {
         BoatResponse boatResponse = new BoatResponse(
+            boat.getBid(),
             boat.getName(),
             boat.getType().name(),
             boat.getMaxCapacity(),
