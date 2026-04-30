@@ -64,7 +64,7 @@ public class ReservationService {
                 throw new ReservationForTooManyPeopleException(String.format("The boat is already reserved for the time slot between %s and %s", resInstanceStart.toString(), resInstanceEnd.toString()));
             }
         }
-
+        reservationsRepository.save(reservationMapper.toEntityFromDomain(reservation));
         return reservation;
     }
 }
