@@ -1,15 +1,17 @@
 package com.java.tp.boat.rental.service;
 
-import java.sql.Date;
 import java.util.ArrayList;
 
 import org.springframework.stereotype.Service;
 
 import com.java.tp.boat.rental.exceptions.boat.BoatDoesNotExistException;
 import com.java.tp.boat.rental.exceptions.client.ClientDoesNotExistException;
+import com.java.tp.boat.rental.exceptions.reservation.BoatAlreadyReservedForDateException;
 import com.java.tp.boat.rental.exceptions.reservation.ClientHasNoLicenseException;
 import com.java.tp.boat.rental.exceptions.reservation.ReservationForTooManyPeopleException;
+import com.java.tp.boat.rental.exceptions.reservation.ReservationStartIsAfterEndException;
 import com.java.tp.boat.rental.model.business.Reservation;
+import com.java.tp.boat.rental.model.entity.ReservationStatus;
 import com.java.tp.boat.rental.model.request.ReservationCreationRequest;
 import com.java.tp.boat.rental.repository.ReservationRepository;
 import com.java.tp.boat.rental.utils.mappers.ReservationMapper;
@@ -36,35 +38,50 @@ public class ReservationService {
     }
 
     /**
-     * Il faut vérifier:
-     * - client existe
-     * - bateau existe
+     * - la requete est valide si elle arrive ici, donc check RG3
      * - on créé la reservation 
      *      ( donc check: 
-     *          - RG2
-     *          - RG3
-     *          - RG4
-     *          - RG5 
-     *          - RG6 / RG7
+     *          - RG2 / RG3 / RG4 / RG5 / RG6 / RG7
      *      )
-     * - RG1 pas de reservation de ce bateau sur le même créeau
-     * 
+     * - RG1 pas de reservation de ce bateau sur le même créeau 
      */
-    public Reservation createReservation(ReservationCreationRequest reservationRequest) throws ClientHasNoLicenseException, ReservationForTooManyPeopleException, ClientDoesNotExistException, BoatDoesNotExistException {
-        // RG2, RG3, RG4, RG5, RG6, RG7
+    public Reservation createReservation(ReservationCreationRequest reservationRequest) throws ClientHasNoLicenseException, ReservationForTooManyPeopleException, ClientDoesNotExistException, BoatDoesNotExistException, ReservationStartIsAfterEndException, BoatAlreadyReservedForDateException {
         Reservation reservation = reservationMapper.toDomainFromRequestCreation(reservationRequest);
         ArrayList<Reservation> reservations = getAllReservations();
         for (Reservation resInstance : reservations) {
-            Date resInstanceStart = resInstance.getStartTime();
-            Date resInstanceEnd = resInstance.getEndTime();
-            Date newResStart = reservation.getStartTime();
-            Date newResEnd = reservation.getEndTime();
-            // RG1
-            if (newResStart.before(resInstanceEnd) || newResEnd.before(resInstanceEnd)) {
-                throw new ReservationForTooManyPeopleException(String.format("The boat is already reserved for the time slot between %s and %s", resInstanceStart.toString(), resInstanceEnd.toString()));
+            if (!resInstance.getBoat().getBid().equals(reservation.getBoat().getBid())) {
+                continue;
+            }
+            ReservationStatus resInstanceStatus = resInstance.getReservationStatus();
+            if (!(resInstanceStatus.equals(ReservationStatus.UPCOMING) || resInstanceStatus.equals(ReservationStatus.ONGOING))) {
+                continue;
+            }
+            if (resInstanceStatus.equals(ReservationStatus.ONGOING)) {
+                throw new BoatAlreadyReservedForDateException(String.format("Boat with id %d is already reserved for the given dates", reservation.getBoat().getBid()));
             }
         }
         reservationsRepository.save(reservationMapper.toEntityFromDomain(reservation));
         return reservation;
+    }
+
+    public Reservation deleteReservation(Long id) {
+        Reservation reservation = getReservationById(id);
+        reservation.setReservationStatus(ReservationStatus.CANCELED);
+        reservationsRepository.save(reservationMapper.toEntityFromDomain(reservation));
+        return reservation;
+    }
+
+    public Reservation cancelReservationById(Long id) {
+        Reservation reservationToBeDeleted = getReservationById(id);
+        reservationToBeDeleted.setReservationStatus(ReservationStatus.CANCELED);
+        reservationsRepository.save(reservationMapper.toEntityFromDomain(reservationToBeDeleted));
+        return reservationToBeDeleted;
+    }
+
+    public Reservation editReservation(ReservationCreationRequest existingReservationRequest, ReservationCreationRequest newReservationRequest) throws ClientHasNoLicenseException, ReservationForTooManyPeopleException, ClientDoesNotExistException, BoatDoesNotExistException, ReservationStartIsAfterEndException, BoatAlreadyReservedForDateException {
+        Reservation existingReservation = reservationMapper.toDomainFromRequestCreation(existingReservationRequest);
+        existingReservation.updateWith(reservationMapper.toDomainFromRequestCreation(newReservationRequest));
+        reservationsRepository.save(reservationMapper.toEntityFromDomain(existingReservation));
+        return existingReservation;
     }
 }

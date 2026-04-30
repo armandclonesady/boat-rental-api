@@ -6,6 +6,7 @@ import com.java.tp.boat.rental.exceptions.boat.BoatDoesNotExistException;
 import com.java.tp.boat.rental.exceptions.client.ClientDoesNotExistException;
 import com.java.tp.boat.rental.exceptions.reservation.ClientHasNoLicenseException;
 import com.java.tp.boat.rental.exceptions.reservation.ReservationForTooManyPeopleException;
+import com.java.tp.boat.rental.exceptions.reservation.ReservationStartIsAfterEndException;
 import com.java.tp.boat.rental.model.business.Reservation;
 import com.java.tp.boat.rental.model.entity.ReservationEntity;
 import com.java.tp.boat.rental.model.request.ReservationCreationRequest;
@@ -33,7 +34,7 @@ public class ReservationMapper implements Mapper<Reservation, ReservationEntity,
     private ClientMapper clientMapper;
 
     @Override
-    public Reservation toDomainFromRequestCreation(ReservationCreationRequest requestCreation) throws ClientHasNoLicenseException, ReservationForTooManyPeopleException, ClientDoesNotExistException, BoatDoesNotExistException {
+    public Reservation toDomainFromRequestCreation(ReservationCreationRequest requestCreation) throws ClientHasNoLicenseException, ReservationForTooManyPeopleException, ClientDoesNotExistException, BoatDoesNotExistException, ReservationStartIsAfterEndException {
         Reservation reservation = new Reservation(
             requestCreation.getRid(),
             clientService.getClientById(requestCreation.getCid()),

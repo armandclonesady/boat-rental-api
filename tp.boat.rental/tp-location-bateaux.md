@@ -39,10 +39,13 @@ L'agent crée une réservation en choisissant un client, un bateau, une date de 
 -- CHECK
 **RG4 — Permis obligatoire.** Si le bateau choisi nécessite un permis, le client doit en posséder un. Sinon la réservation est refusée.
 
+-- CHECK
 **RG5 — Capacité respectée.** Au moment de créer la réservation, l'agent saisit le nombre de personnes prévues à bord. Ce nombre ne doit pas dépasser la capacité maximale du bateau.
 
+-- CHECK
 **RG6 — Calcul du prix.** Le prix total est égal au tarif journalier du bateau multiplié par le nombre de jours de location. Le jour de départ et le jour de retour sont tous les deux comptés (une location du 10 au 12 juillet = 3 jours).
 
+-- CHECK
 **RG7 — Caution.** Le montant de la caution est repris depuis la fiche du bateau au moment de la création de la réservation, et reste figé sur cette réservation même si le tarif du bateau change ensuite.
 
 **RG8 — Politique d'annulation.**
