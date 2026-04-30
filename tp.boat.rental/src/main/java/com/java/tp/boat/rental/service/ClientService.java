@@ -9,7 +9,7 @@ import com.java.tp.boat.rental.exceptions.client.ClientDoesNotExistException;
 import com.java.tp.boat.rental.exceptions.client.InvalidClientException;
 import com.java.tp.boat.rental.model.business.Client;
 import com.java.tp.boat.rental.model.entity.ClientEntity;
-import com.java.tp.boat.rental.model.request.ClientCreateRequest;
+import com.java.tp.boat.rental.model.request.ClientCreationRequest;
 import com.java.tp.boat.rental.model.request.ClientUpdateRequest;
 import com.java.tp.boat.rental.model.response.ClientResponse;
 import com.java.tp.boat.rental.repository.ClientRepository;
@@ -26,44 +26,46 @@ public class ClientService {
     private ClientRepository clientRepository;
     private ClientMapper clientMapper;
 
-    public ClientResponse getClientById(Long id) throws ClientDoesNotExistException {
-        return clientRepository.findById(id).map(clientMapper::toResponse).orElseThrow(() -> new ClientDoesNotExistException(String.format("No client associated with id %d", id)));
+    public Client getClientById(Long id) throws ClientDoesNotExistException {
+        return clientRepository.findById(id).map(clientMapper::toDomainFromEntity).orElseThrow(() -> new ClientDoesNotExistException(String.format("No client associated with id %d", id)));
     }
 
-    public ArrayList<ClientResponse> getAllClients() {
+    public ArrayList<Client> getAllClients() {
         Iterable<ClientEntity> clients = clientRepository.findAll();
-        ArrayList<ClientResponse> clientResponses = new ArrayList<>();
-        clients.forEach(client -> clientResponses.add(clientMapper.toResponse(client)));
-        return clientResponses;
+        ArrayList<Client> clientDomains = new ArrayList<>();
+        clients.forEach(client -> clientDomains.add(clientMapper.toDomainFromEntity(client)));
+        return clientDomains;
     }
 
-    public ClientResponse createClient(ClientCreateRequest clientRequest) throws InvalidClientException {
-        Client client = clientMapper.toDomain(clientRequest);
-        return clientMapper.toResponse(clientRepository.save(clientMapper.toEntity(client)));
+    public Client createClient(ClientCreationRequest clientRequest) throws InvalidClientException {
+        Client client = clientMapper.toDomainFromRequestCreation(clientRequest);
+        clientRepository.save(clientMapper.toEntityFromDomain(client));
+        return client;
     }
 
-    public ClientResponse deleteClientById(Long id) throws ClientDoesNotExistException {
+    public Client deleteClientById(Long id) throws ClientDoesNotExistException {
         Optional<ClientEntity> clientToBeDeleted = clientRepository.findById(id);
         if (clientToBeDeleted.isPresent()) {
             clientRepository.delete(clientToBeDeleted.get());
         }
-        return clientToBeDeleted.map(clientMapper::toResponse).orElseThrow(() -> new ClientDoesNotExistException(String.format("No client associated with id %d", id)));
+        return clientToBeDeleted.map(clientMapper::toDomainFromEntity).orElseThrow(() -> new ClientDoesNotExistException(String.format("No client associated with id %d", id)));
     }
 
-    public ClientResponse editClient(ClientCreateRequest existingClientRequest, ClientCreateRequest newClientRequest) throws InvalidClientException{
-        Client existingClient = clientMapper.toDomain(existingClientRequest);
-        existingClient.updateWith(clientMapper.toDomain(newClientRequest));
-        return clientMapper.toResponse(existingClient);
+    public Client editClient(ClientCreationRequest existingClientRequest, ClientCreationRequest newClientRequest) throws InvalidClientException{
+        Client existingClient = clientMapper.toDomainFromRequestCreation(existingClientRequest);
+        existingClient.updateWith(clientMapper.toDomainFromRequestCreation(newClientRequest));
+        clientRepository.save(clientMapper.toEntityFromDomain(existingClient));
+        return existingClient;
     }
 
-    public ClientResponse updateClient(Long id, ClientUpdateRequest clientUpdateRequest) throws InvalidClientException {
+    public Client updateClient(Long id, ClientUpdateRequest clientUpdateRequest) throws InvalidClientException {
         Optional<ClientEntity> existingClient = clientRepository.findById(id);
-        Client existingClientDomain = clientMapper.toDomain(existingClient.get());
-        ClientCreateRequest clientRequest = ClientMapper.toClientRequest(clientUpdateRequest);
-        Client client = clientMapper.toDomain(clientRequest);
+        Client existingClientDomain = clientMapper.toDomainFromEntity(existingClient.get());
+        ClientCreationRequest clientRequest = clientMapper.toRequestCreationFromRequestUpdate(clientUpdateRequest);
+        Client client = clientMapper.toDomainFromRequestCreation(clientRequest);
         existingClientDomain.updateWith(client);
-        ClientEntity updatedClient = clientRepository.save(clientMapper.toEntity(existingClientDomain));
-        return clientMapper.toResponse(updatedClient);
+        clientRepository.save(clientMapper.toEntityFromDomain(existingClientDomain));
+        return existingClientDomain;
     } 
 
 

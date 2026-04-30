@@ -13,6 +13,7 @@ import com.java.tp.boat.rental.model.request.BoatCreationRequest;
 import com.java.tp.boat.rental.model.request.BoatUpdateRequest;
 import com.java.tp.boat.rental.model.response.BoatResponse;
 import com.java.tp.boat.rental.service.BoatService;
+import com.java.tp.boat.rental.utils.mappers.BoatMapper;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -35,30 +36,31 @@ import org.springframework.web.bind.annotation.RequestBody;
 public class BoatController {
 
     private BoatService boatService;
+    private BoatMapper boatMapper;
 
     @GetMapping("/")
     public Iterable<BoatResponse> getAllBots() {
-        return boatService.getAllBoats();
+        return boatService.getAllBoats().stream().map(boatMapper::toResponseFromDomain).toList();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<BoatResponse> getBoatById(@PathVariable Long id) throws BoatDoesNotExistException {
-        return ResponseEntity.ok(boatService.getBoatById(id));
+        return ResponseEntity.ok(boatMapper.toResponseFromDomain(boatService.getBoatById(id)));
     }
 
     @PostMapping("/")
     public ResponseEntity<BoatResponse> postBoat(@RequestBody @Valid BoatCreationRequest boatRequest) throws InvalidBoatException {
-        return ResponseEntity.status(HttpStatus.CREATED).body(boatService.createBoat(boatRequest));
+        return ResponseEntity.status(HttpStatus.CREATED).body(boatMapper.toResponseFromDomain(boatService.createBoat(boatRequest)));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<BoatResponse> deleteBoat(@PathVariable Long id) throws BoatDoesNotExistException {
         //TODO: RG8 - politique d'annulation
-        return ResponseEntity.ok(boatService.deleteBoatById(id));
+        return ResponseEntity.ok(boatMapper.toResponseFromDomain(boatService.deleteBoatById(id)));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<BoatResponse> putBoat(@PathVariable Long id, @RequestBody @Valid BoatUpdateRequest boatUpdateRequest) throws InvalidBoatException {
-        return ResponseEntity.ok(boatService.updateBoat(id, boatUpdateRequest));
+        return ResponseEntity.ok(boatMapper.toResponseFromDomain(boatService.updateBoat(id, boatUpdateRequest)));
     }
 }

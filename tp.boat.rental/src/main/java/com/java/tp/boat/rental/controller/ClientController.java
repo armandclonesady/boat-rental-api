@@ -8,10 +8,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.java.tp.boat.rental.exceptions.client.ClientDoesNotExistException;
 import com.java.tp.boat.rental.exceptions.client.InvalidClientException;
-import com.java.tp.boat.rental.model.request.ClientCreateRequest;
+import com.java.tp.boat.rental.model.request.ClientCreationRequest;
 import com.java.tp.boat.rental.model.request.ClientUpdateRequest;
 import com.java.tp.boat.rental.model.response.ClientResponse;
 import com.java.tp.boat.rental.service.ClientService;
+import com.java.tp.boat.rental.utils.mappers.ClientMapper;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -35,30 +36,31 @@ import org.springframework.web.bind.annotation.RequestBody;
 public class ClientController {
     
     private ClientService clientService;
+    private ClientMapper clientMapper;
 
     @GetMapping("/")
     public Iterable<ClientResponse> getAllClient() {
-        return clientService.getAllClients();
+        return clientService.getAllClients().stream().map(clientMapper::toResponseFromDomain).toList();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ClientResponse> getClientById(@PathVariable Long id) throws ClientDoesNotExistException {
-        return ResponseEntity.ok(clientService.getClientById(id));
+        return ResponseEntity.ok(clientMapper.toResponseFromDomain(clientService.getClientById(id)));
     }
 
     @PostMapping("/")
-    public ResponseEntity<ClientResponse> postClient(@RequestBody @Valid ClientCreateRequest clientRequest) throws InvalidClientException {
-            return ResponseEntity.status(HttpStatus.CREATED).body(clientService.createClient(clientRequest));
+    public ResponseEntity<ClientResponse> postClient(@RequestBody @Valid ClientCreationRequest clientRequest) throws InvalidClientException {
+            return ResponseEntity.status(HttpStatus.CREATED).body(clientMapper.toResponseFromDomain(clientService.createClient(clientRequest)));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ClientResponse> deleteClient(@PathVariable Long id) throws ClientDoesNotExistException {
-        return ResponseEntity.ok(clientService.deleteClientById(id));
+        return ResponseEntity.ok(clientMapper.toResponseFromDomain(clientService.deleteClientById(id)));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<ClientResponse> putClient(@PathVariable Long id, @RequestBody @Valid ClientUpdateRequest client) throws InvalidClientException {
-        return ResponseEntity.ok(clientService.updateClient(id, client));
+        return ResponseEntity.ok(clientMapper.toResponseFromDomain(clientService.updateClient(id, client)));
     }
     
 }

@@ -8,7 +8,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
-public class ClientCreateRequest {
+public class ClientCreationRequest {
     @Null
     private Long cid;
 
