@@ -8,7 +8,7 @@ import jakarta.validation.constraints.Positive;
 import lombok.Data;
 
 @Data
-public class ReservationRequest {
+public class ReservationUpdateRequest {
     @NotBlank(message = "Client ID information is required")
     private Long cid;
 
@@ -19,7 +19,6 @@ public class ReservationRequest {
     @Positive(message = "Amount of people must be a positive number")
     private Integer amountOfPeople;
     
-    // -- RG3
     @NotBlank(message = "Start time information is required")
     @Future(message = "Start time must be in the future")
     private Date startTime;

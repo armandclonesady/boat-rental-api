@@ -1,4 +1,4 @@
-package com.java.tp.boat.rental.exceptions;
+package com.java.tp.boat.rental.exceptions.client;
 
 public class ClientDoesNotExistException extends Exception {
     public ClientDoesNotExistException(String message) {

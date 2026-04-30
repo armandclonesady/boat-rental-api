@@ -31,9 +31,9 @@ public class BoatEntity {
     @Column(nullable = false)
     private Float length;
     
-    private Float dailyRate;
+    private Double dailyRate;
 
-    private Float deposit;
+    private Double deposit;
 
     private Boolean needsLicense;
 }

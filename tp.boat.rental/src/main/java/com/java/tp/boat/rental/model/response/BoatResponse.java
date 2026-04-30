@@ -11,7 +11,7 @@ public class BoatResponse {
     private String type;
     private Integer maxCapacity;
     private Float length;
-    private Float dailyRate;
-    private Float deposit;  
+    private Double dailyRate;
+    private Double deposit;  
     private Boolean needsLicense;
 }

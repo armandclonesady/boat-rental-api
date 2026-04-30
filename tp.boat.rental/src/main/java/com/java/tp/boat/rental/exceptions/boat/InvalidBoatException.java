@@ -1,4 +1,4 @@
-package com.java.tp.boat.rental.exceptions;
+package com.java.tp.boat.rental.exceptions.boat;
 
 public class InvalidBoatException extends Exception {
     

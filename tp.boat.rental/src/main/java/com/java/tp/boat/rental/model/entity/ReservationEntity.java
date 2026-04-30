@@ -5,6 +5,8 @@ import jakarta.persistence.GenerationType;
 import java.sql.Date;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -16,7 +18,7 @@ import lombok.Data;
 @Data
 @Entity
 @Table(name = "reservations")
-public class ReservationsEntity {
+public class ReservationEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,6 +31,9 @@ public class ReservationsEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "bid")
     private BoatEntity bid;
+
+    @Enumerated(EnumType.ORDINAL)
+    private ReservationStatus status;
 
     private Integer amountOfPeople;
 

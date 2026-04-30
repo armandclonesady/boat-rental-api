@@ -16,8 +16,8 @@ public class Boat {
     private BoatTypes type;
     private Integer maxCapacity;
     private Float length;
-    private Float dailyRate;
-    private Float deposit;
+    private Double dailyRate;
+    private Double deposit;
     private Boolean needsLicense;
 
     public void updateWith(Boat newBoat) {

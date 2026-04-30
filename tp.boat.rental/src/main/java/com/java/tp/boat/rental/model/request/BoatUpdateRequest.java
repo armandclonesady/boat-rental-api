@@ -23,10 +23,10 @@ public class BoatUpdateRequest {
     private Float length;
 
     @Positive(message = "Daily rate must be a positive number")
-    private Float dailyRate;
+    private Double dailyRate;
 
     @Positive(message = "Deposit must be a positive number")
-    private Float deposit;  
+    private Double deposit;  
 
     private Boolean needsLicense = false; 
 }

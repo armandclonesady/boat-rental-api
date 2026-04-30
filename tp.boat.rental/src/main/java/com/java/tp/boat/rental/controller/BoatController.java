@@ -7,8 +7,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.java.tp.boat.rental.exceptions.BoatDoesNotExistException;
-import com.java.tp.boat.rental.exceptions.InvalidBoatException;
+import com.java.tp.boat.rental.exceptions.boat.BoatDoesNotExistException;
+import com.java.tp.boat.rental.exceptions.boat.InvalidBoatException;
 import com.java.tp.boat.rental.model.request.BoatCreationRequest;
 import com.java.tp.boat.rental.model.request.BoatUpdateRequest;
 import com.java.tp.boat.rental.model.response.BoatResponse;
@@ -53,6 +53,7 @@ public class BoatController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<BoatResponse> deleteBoat(@PathVariable Long id) throws BoatDoesNotExistException {
+        //TODO: RG8 - politique d'annulation
         return ResponseEntity.ok(boatService.deleteBoatById(id));
     }
 

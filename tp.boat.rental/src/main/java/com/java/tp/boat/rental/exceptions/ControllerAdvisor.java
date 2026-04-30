@@ -10,6 +10,11 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import com.java.tp.boat.rental.exceptions.boat.BoatDoesNotExistException;
+import com.java.tp.boat.rental.exceptions.boat.InvalidBoatException;
+import com.java.tp.boat.rental.exceptions.client.ClientDoesNotExistException;
+import com.java.tp.boat.rental.exceptions.client.InvalidClientException;
+
 @ControllerAdvice
 public class ControllerAdvisor {
     

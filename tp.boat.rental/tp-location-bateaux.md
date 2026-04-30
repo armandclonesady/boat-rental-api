@@ -33,8 +33,10 @@ L'agent crée une réservation en choisissant un client, un bateau, une date de 
 
 **RG2 — Cohérence des dates.** La date de fin doit être strictement postérieure à la date de début.
 
+-- CHECK
 **RG3 — Pas de réservation dans le passé.** La date de début doit être supérieure ou égale à aujourd'hui.
 
+-- CHECK
 **RG4 — Permis obligatoire.** Si le bateau choisi nécessite un permis, le client doit en posséder un. Sinon la réservation est refusée.
 
 **RG5 — Capacité respectée.** Au moment de créer la réservation, l'agent saisit le nombre de personnes prévues à bord. Ce nombre ne doit pas dépasser la capacité maximale du bateau.

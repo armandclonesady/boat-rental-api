@@ -6,8 +6,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.java.tp.boat.rental.exceptions.ClientDoesNotExistException;
-import com.java.tp.boat.rental.exceptions.InvalidClientException;
+import com.java.tp.boat.rental.exceptions.client.ClientDoesNotExistException;
+import com.java.tp.boat.rental.exceptions.client.InvalidClientException;
 import com.java.tp.boat.rental.model.request.ClientCreateRequest;
 import com.java.tp.boat.rental.model.request.ClientUpdateRequest;
 import com.java.tp.boat.rental.model.response.ClientResponse;

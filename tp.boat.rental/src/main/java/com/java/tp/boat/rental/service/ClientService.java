@@ -5,8 +5,8 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
-import com.java.tp.boat.rental.exceptions.ClientDoesNotExistException;
-import com.java.tp.boat.rental.exceptions.InvalidClientException;
+import com.java.tp.boat.rental.exceptions.client.ClientDoesNotExistException;
+import com.java.tp.boat.rental.exceptions.client.InvalidClientException;
 import com.java.tp.boat.rental.model.business.Client;
 import com.java.tp.boat.rental.model.entity.ClientEntity;
 import com.java.tp.boat.rental.model.request.ClientCreateRequest;
