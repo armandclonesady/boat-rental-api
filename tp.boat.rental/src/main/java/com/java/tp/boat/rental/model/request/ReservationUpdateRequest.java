@@ -4,11 +4,17 @@ import java.sql.Date;
 
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Null;
 import jakarta.validation.constraints.Positive;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
+@AllArgsConstructor
 public class ReservationUpdateRequest {
+    @Null
+    private Long rid;
+
     @NotBlank(message = "Client ID information is required")
     private Long cid;
 

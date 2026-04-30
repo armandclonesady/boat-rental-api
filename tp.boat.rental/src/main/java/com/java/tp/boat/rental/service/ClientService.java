@@ -11,7 +11,6 @@ import com.java.tp.boat.rental.model.business.Client;
 import com.java.tp.boat.rental.model.entity.ClientEntity;
 import com.java.tp.boat.rental.model.request.ClientCreationRequest;
 import com.java.tp.boat.rental.model.request.ClientUpdateRequest;
-import com.java.tp.boat.rental.model.response.ClientResponse;
 import com.java.tp.boat.rental.repository.ClientRepository;
 import com.java.tp.boat.rental.utils.mappers.ClientMapper;
 

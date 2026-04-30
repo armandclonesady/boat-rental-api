@@ -1,12 +1,18 @@
 package com.java.tp.boat.rental.model.business;
 
+import java.sql.Date;
+
 import com.java.tp.boat.rental.exceptions.reservation.ClientHasNoLicenseException;
 import com.java.tp.boat.rental.exceptions.reservation.ReservationForTooManyPeopleException;
 import com.java.tp.boat.rental.model.entity.ReservationStatus;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Reservation {
     private Long rid;
     private Client client;
@@ -15,29 +21,34 @@ public class Reservation {
     private Integer amountOfPeople;
     private Double price;
     private Double deposit;
-    private String startTime;
-    private String endTime;
+    private Date startTime;
+    private Date endTime;
 
-    private Reservation() {}
-
-    private Reservation(Long rid, Client client, Boat boat, ReservationStatus reservationStatus, Integer amountOfPeople, String startTime, String endTime) throws ClientHasNoLicenseException, ReservationForTooManyPeopleException {
+    public Reservation(Long rid, Client client, Boat boat, Integer amountOfPeople, Date startTime, Date endTime) throws ClientHasNoLicenseException, ReservationForTooManyPeopleException {
         // -- RG4
         this.checkLicense(client, boat);
         // -- RG5
         this.checkCapacity(amountOfPeople, boat);
-        // -- RG6
-        this.calculatePrice(boat, startTime, endTime);
 
+
+        // -- RG6
+        this.price = this.calculatePrice(boat, startTime, endTime);
         // -- RG7
-        this.calculateDeposit(boat);
+        this.deposit = this.calculateDeposit(boat);
+
+        this.reservationStatus = this.calculateReservationStatus(startTime, endTime);
         
         this.rid = rid;
         this.client = client;
         this.boat = boat;
-        this.reservationStatus = reservationStatus;
         this.amountOfPeople = amountOfPeople;
         this.startTime = startTime;
         this.endTime = endTime;
+    }
+
+    private ReservationStatus calculateReservationStatus(Date startTime2, Date endTime2) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'calculateReservationStatus'");
     }
 
     private void checkLicense(Client client, Boat boat) throws ClientHasNoLicenseException {
@@ -52,12 +63,12 @@ public class Reservation {
         }
     }
 
-    private void calculatePrice(Boat boat, String startTime, String endTime) {
+    private Double calculatePrice(Boat boat, Date startTime2, Date endTime2) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'calculatePrice'");
     }
 
-    private void calculateDeposit(Boat boat) {
+    private Double calculateDeposit(Boat boat) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'calculateDeposit'");
     }
