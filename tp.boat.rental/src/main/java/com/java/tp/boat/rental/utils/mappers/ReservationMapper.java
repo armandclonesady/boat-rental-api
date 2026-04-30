@@ -46,12 +46,15 @@ public class ReservationMapper implements Mapper<Reservation, ReservationEntity,
     }
 
     @Override
-    public Reservation toDomainFromEntity(ReservationEntity entity) throws ClientHasNoLicenseException, ReservationForTooManyPeopleException, ClientDoesNotExistException, BoatDoesNotExistException {
-        Reservation reservation = new Reservation(
+    public Reservation toDomainFromEntity(ReservationEntity entity) {
+        Reservation reservation = Reservation.fromEntity(
             entity.getRid(),
-            clientService.getClientById(entity.getCid().getCid()),
-            boatService.getBoatById(entity.getBid().getBid()),
+            clientMapper.toDomainFromEntity(entity.getCid()),
+            boatMapper.toDomainFromEntity(entity.getBid()),
             entity.getAmountOfPeople(),
+            entity.getPrice(),
+            entity.getDeposit(),
+            entity.getStatus(),
             entity.getStartTime(),
             entity.getEndTime()
         );
@@ -64,6 +67,8 @@ public class ReservationMapper implements Mapper<Reservation, ReservationEntity,
         reservationEntity.setCid(clientMapper.toEntityFromDomain(model.getClient()));
         reservationEntity.setBid(boatMapper.toEntityFromDomain(model.getBoat()));
         reservationEntity.setAmountOfPeople(model.getAmountOfPeople());
+        reservationEntity.setPrice(model.getPrice());
+        reservationEntity.setDeposit(model.getDeposit());
         reservationEntity.setStartTime(model.getStartTime());
         reservationEntity.setEndTime(model.getEndTime());
         return reservationEntity;

@@ -37,6 +37,10 @@ public class ReservationEntity implements EntityModel {
 
     private Integer amountOfPeople;
 
+    private Double price;
+
+    private Double deposit;
+
     private Date startTime;
 
     private Date endTime;

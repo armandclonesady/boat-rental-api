@@ -46,6 +46,20 @@ public class Reservation {
         this.endTime = endTime;
     }
 
+    public static Reservation fromEntity(Long rid, Client client, Boat boat, Integer amountOfPeople, Double price, Double deposit, ReservationStatus status, Date startTime, Date endTime) {
+        Reservation r = new Reservation();
+        r.rid = rid;
+        r.client = client;
+        r.boat = boat;
+        r.amountOfPeople = amountOfPeople;
+        r.price = price;
+        r.deposit = deposit;
+        r.reservationStatus = status;
+        r.startTime = startTime;
+        r.endTime = endTime;
+        return r;
+    }
+
     private ReservationStatus calculateReservationStatus(Date startTime2, Date endTime2) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'calculateReservationStatus'");
