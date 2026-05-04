@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 import com.java.tp.boat.rental.exceptions.reservation.BoatAlreadyReservedForDateException;
+import com.java.tp.boat.rental.exceptions.reservation.ReservationDoesNotExist;
 import com.java.tp.boat.rental.model.business.Reservation;
 import com.java.tp.boat.rental.model.entity.ReservationEntity;
 import com.java.tp.boat.rental.model.entity.ReservationStatus;
@@ -27,7 +28,7 @@ public class ReservationService {
     private ReservationMapper reservationMapper;
 
     public Reservation getReservationById(Long rid) {
-        return reservationMapper.toDomainFromEntity(reservationsRepository.findById(rid).orElseThrow());
+        return reservationMapper.toDomainFromEntity(reservationsRepository.findById(rid).orElseThrow(() -> new ReservationDoesNotExist(String.format("No reservation associated with id %d", rid))));
     }
     
     public ArrayList<Reservation> getAllReservations() {

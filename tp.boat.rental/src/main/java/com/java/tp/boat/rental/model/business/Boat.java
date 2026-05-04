@@ -8,16 +8,14 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class Boat {
-    public static Double DEFAULT_DAILY_RATE = 100.0;
-    public static Double DEFAULT_DEPOSIT = 200.0;
 
     private Long bid;
     private String name;
     private BoatTypes type;
     private Integer maxCapacity;
     private Float length;
-    private Double dailyRate = DEFAULT_DAILY_RATE;
-    private Double deposit = DEFAULT_DEPOSIT;
+    private Double dailyRate;
+    private Double deposit;
     private Boolean needsLicense;
 
     public void updateWith(Boat newBoat) {

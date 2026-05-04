@@ -9,6 +9,10 @@ import lombok.Data;
 
 @Data
 public class BoatCreationRequest {
+    public static Double DEFAULT_DAILY_RATE = 100.0;
+    public static Double DEFAULT_DEPOSIT = 200.0;
+
+
     @Null
     private Long bid;
 
@@ -31,10 +35,10 @@ public class BoatCreationRequest {
     private Float length;
 
     @Positive(message = "Daily rate must be a positive number")
-    private Double dailyRate;
+    private Double dailyRate = DEFAULT_DAILY_RATE;
 
     @Positive(message = "Deposit must be a positive number")
-    private Double deposit;  
+    private Double deposit = DEFAULT_DEPOSIT;
 
     private Boolean needsLicense = false;
 }

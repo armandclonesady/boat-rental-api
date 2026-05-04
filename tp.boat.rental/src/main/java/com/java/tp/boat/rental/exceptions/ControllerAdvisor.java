@@ -10,10 +10,12 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import com.java.tp.boat.rental.exceptions.boat.BoatCannotBeDeletedException;
 import com.java.tp.boat.rental.exceptions.boat.BoatDoesNotExistException;
 import com.java.tp.boat.rental.exceptions.boat.InvalidBoatException;
 import com.java.tp.boat.rental.exceptions.client.ClientDoesNotExistException;
 import com.java.tp.boat.rental.exceptions.client.InvalidClientException;
+import com.java.tp.boat.rental.exceptions.reservation.ReservationDoesNotExist;
 
 @ControllerAdvice
 public class ControllerAdvisor {
@@ -36,6 +38,16 @@ public class ControllerAdvisor {
     @ExceptionHandler(BoatDoesNotExistException.class)
     public ResponseEntity<String> handleBoatDoesNotExistException(BoatDoesNotExistException e) {
         return ResponseEntity.status(404).body("BoatDoesNotExistException from BoatController: " + e.getMessage());
+    }
+
+    @ExceptionHandler(BoatCannotBeDeletedException.class)
+    public ResponseEntity<String> handleBoatCannotBeDeletedException(BoatCannotBeDeletedException e) {
+        return ResponseEntity.status(400).body("BoatCannotBeDeletedException from BoatController: " + e.getMessage());
+    }
+
+    @ExceptionHandler(ReservationDoesNotExist.class)
+    public ResponseEntity<String> handleReservationDoesNotExistException(ReservationDoesNotExist e) {
+        return ResponseEntity.status(404).body("ReservationDoesNotExist from ReservationController: " + e.getMessage());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
