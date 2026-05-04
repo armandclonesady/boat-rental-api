@@ -37,8 +37,8 @@ public class ClientService {
 
     public Client createClient(ClientCreationRequest clientRequest) {
         Client client = clientMapper.toDomainFromRequestCreation(clientRequest);
-        clientRepository.save(clientMapper.toEntityFromDomain(client));
-        return client;
+        ClientEntity savedClient = clientRepository.save(clientMapper.toEntityFromDomain(client));
+        return clientMapper.toDomainFromEntity(savedClient);
     }
 
     public Client deleteClientById(Long id) {
@@ -55,13 +55,10 @@ public class ClientService {
     }
 
     public Client updateClient(Long id, ClientUpdateRequest clientUpdateRequest) {
-        Optional<ClientEntity> existingClient = clientRepository.findById(id);
-        Client existingClientDomain = clientMapper.toDomainFromEntity(existingClient.get());
-        ClientCreationRequest clientRequest = clientMapper.toRequestCreationFromRequestUpdate(clientUpdateRequest);
-        Client client = clientMapper.toDomainFromRequestCreation(clientRequest);
-        existingClientDomain.updateWith(client);
-        clientRepository.save(clientMapper.toEntityFromDomain(existingClientDomain));
-        return existingClientDomain;
+        Client existingClient = this.getClientById(id);
+        existingClient.updateWith(clientMapper.toDomainFromRequestUpdate(clientUpdateRequest));
+        Client updatedClient = clientMapper.toDomainFromEntity(clientRepository.save(clientMapper.toEntityFromDomainWithId(existingClient)));
+        return updatedClient;
     } 
 
 

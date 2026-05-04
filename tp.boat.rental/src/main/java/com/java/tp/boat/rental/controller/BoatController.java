@@ -55,7 +55,6 @@ public class BoatController {
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<BoatResponse> deleteBoat(@PathVariable Long id) throws BoatDoesNotExistException {
-        //TODO: RG8 - politique d'annulation
         return ResponseEntity.ok(boatMapper.toResponseFromDomain(boatService.deleteBoatById(id)));
     }
 

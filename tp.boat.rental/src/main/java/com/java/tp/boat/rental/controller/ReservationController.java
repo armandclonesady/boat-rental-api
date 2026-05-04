@@ -60,7 +60,7 @@ public class ReservationController {
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<ReservationResponse> putReservation(@PathVariable String id, @RequestBody @Valid ReservationUpdateRequest entity) {
+    public ResponseEntity<ReservationResponse> putReservation(@PathVariable Long id, @RequestBody @Valid ReservationUpdateRequest entity) {
         return ResponseEntity.ok(reservationMapper.toResponseFromDomain(reservationService.updateReservation(id, entity)));
     }
     

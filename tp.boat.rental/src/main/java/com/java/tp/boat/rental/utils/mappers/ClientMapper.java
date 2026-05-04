@@ -50,6 +50,17 @@ public class ClientMapper implements Mapper<Client, ClientEntity, ClientCreation
         return clientEntity;
     }
 
+    public ClientEntity toEntityFromDomainWithId(Client client) {
+        ClientEntity clientEntity = new ClientEntity();
+        clientEntity.setCid(client.getCid()); // quand on veux plutot UPDATE que CREATE, on veut garder le meme id
+        clientEntity.setFirstName(client.getFirstName());
+        clientEntity.setLastName(client.getLastName());
+        clientEntity.setEmail(client.getEmail());
+        clientEntity.setPhoneNumber(client.getPhoneNumber());
+        clientEntity.setHasLicense(client.getHasLicense());
+        return clientEntity;
+    }
+
     public ClientResponse toResponseFromDomain(Client client) {
         ClientResponse clientResponse = new ClientResponse(
             client.getCid(),

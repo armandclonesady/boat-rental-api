@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.java.tp.boat.rental.exceptions.reservation.BoatAlreadyReservedForDateException;
 import com.java.tp.boat.rental.model.business.Reservation;
+import com.java.tp.boat.rental.model.entity.ReservationEntity;
 import com.java.tp.boat.rental.model.entity.ReservationStatus;
 import com.java.tp.boat.rental.model.request.ReservationCreationRequest;
 import com.java.tp.boat.rental.model.request.ReservationUpdateRequest;
@@ -46,11 +47,11 @@ public class ReservationService {
     public Reservation createReservation(ReservationCreationRequest reservationRequest) {
         Reservation reservation = reservationMapper.toDomainFromRequestCreation(reservationRequest);
         if (checkIsAvailable(reservation.getBoat().getBid(), reservation.getStartTime().toLocalDate(), reservation.getEndTime().toLocalDate())) {
-            reservationsRepository.save(reservationMapper.toEntityFromDomain(reservation));
+            ReservationEntity savedReservation = reservationsRepository.save(reservationMapper.toEntityFromDomain(reservation));
+            return reservationMapper.toDomainFromEntity(savedReservation);
         } else {
             throw new BoatAlreadyReservedForDateException(String.format("Boat with id %d is already reserved for the given dates", reservation.getBoat().getBid()));
         }
-        return reservation;
     }
 
     public boolean checkIsAvailable(Long bid, LocalDate startTime, LocalDate endTime) {
@@ -89,7 +90,7 @@ public class ReservationService {
 
     public Reservation updateReservation(Long id, ReservationUpdateRequest reservationUpdateRequest) {
         Reservation existingReservation = getReservationById(id);
-        if (!checkIsAvailable(existingReservation.getBoat().getBid(), existingReservation.getStartTime().toLocalDate(), existingReservation.getEndTime().toLocalDate())) {
+        if (!checkIsAvailable(existingReservation.getBoat().getBid(), reservationUpdateRequest.getStartTime().toLocalDate(), existingReservation.getEndTime().toLocalDate())) {
             throw new BoatAlreadyReservedForDateException(String.format("Boat with id %d is already reserved for the given dates", existingReservation.getBoat().getBid()));
         }
         existingReservation.updateWith(reservationMapper.toDomainFromRequestUpdate(reservationUpdateRequest));

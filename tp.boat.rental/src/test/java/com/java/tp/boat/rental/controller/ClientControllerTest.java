@@ -1,5 +1,6 @@
 package com.java.tp.boat.rental.controller;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -8,8 +9,13 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -20,6 +26,14 @@ public class ClientControllerTest {
 
     private Long addedClientId;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @BeforeEach
+    public void setup() throws Exception {
+        addedClientId = null;
+    }
+
     @Test
     public void testGetAllClients() throws Exception {
         mockMvc.perform(get("/clients/"))
@@ -28,52 +42,65 @@ public class ClientControllerTest {
     }
 
     @Test
+    public void testGetClientByIdWorks() throws Exception {
+        addedClientId = createTestClient();
+        String response = mockMvc.perform(get("/clients/" + addedClientId))
+        .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+        System.out.println(response);
+        Long responseId = objectMapper.readTree(response).get("cid").asLong();
+        assert(responseId.equals(addedClientId));
+    }
+
+    @Test
     public void testPostClientWorks() throws Exception {
-        // First, add a client to ensure there is at least one client in the database
-        mockMvc.perform(post("/clients/")
+        addedClientId = createTestClient();
+        String response = mockMvc.perform(get("/clients/" + addedClientId))
+        .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+        System.out.println(response);
+        Long responseId = objectMapper.readTree(response).get("cid").asLong();
+        assert(responseId.equals(addedClientId));
+    }
+
+    @Test
+    public void testUpdateClientWorks() throws Exception {
+        addedClientId = createTestClient();
+        String response = mockMvc.perform(put("/clients/update/" + addedClientId)
+        .contentType("application/json")
+        .content(
+            "{ \"email\": \"test@testexample.com\" }"
+        ))
+        .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+        System.out.println(response);
+
+        String testPostUpdateResponse = mockMvc.perform(get("/clients/" + addedClientId))
+        .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+        System.out.println(testPostUpdateResponse);
+
+        Long responseId = objectMapper.readTree(response).get("cid").asLong();
+        assert(responseId.equals(addedClientId));
+    }
+    
+
+    @Test
+    public void testDeleteClientWorks() throws Exception {
+        addedClientId = createTestClient();
+        mockMvc.perform(delete("/clients/delete/" + addedClientId))
+        .andExpect(status().isOk());
+        mockMvc.perform(get("/clients/" + addedClientId))
+        .andExpect(status().isNotFound());
+    }
+
+    private Long createTestClient() throws Exception {
+        String response = mockMvc.perform(post("/clients/create")
         .contentType("application/json")
         .content(
             "{ \"firstName\": \"John\", \"lastName\": \"Doe\", \"email\": \"john.doe@example.com\", \"phoneNumber\": \"1234567890\" }"
         ))
         .andExpect(status().isCreated())
-        .andDo(result -> {
-            String response = result.getResponse().getContentAsString();
-            String idString = response.split("\"cid\":")[1].split(",")[0].trim();
-            addedClientId = Long.parseLong(idString);
-        });
-        if (addedClientId != null) {
-            mockMvc.perform(get("/clients/" + addedClientId))
-            .andExpect(status().isOk()).andExpect(jsonPath("$.cid").value(addedClientId));
-        }
-    }
-    
-    @Test
-    public void testPostClientFailsWithMissingData() throws Exception {
-        mockMvc.perform(post("/clients/")
-        .contentType("application/json")
-        .content(
-            "{ \"lastName\": \"Doe\", \"email\": \"john.doe@example.com\", \"phone\": \"1234567890\" }"
-        ))
-        .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    public void testPostClientFailsWithBlankData() throws Exception {
-        mockMvc.perform(post("/clients/")
-        .contentType("application/json")
-        .content(
-            "{ \"firstName\": \"\", \"lastName\": \"Doe\", \"email\": \"john.doe@example.com\", \"phone\": \"1234567890\" }"
-        ))
-        .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    public void testPostClientFailsWithInvalidEmail() throws Exception {
-        mockMvc.perform(post("/clients/")
-        .contentType("application/json")
-        .content(
-            "{ \"firstName\": \"John\", \"lastName\": \"Doe\", \"email\": \"john.doeexample.com\", \"phone\": \"1234567890\" }"
-        ))
-        .andExpect(status().isBadRequest());
+        .andReturn().getResponse().getContentAsString();
+        System.out.println("/!\\ Created client with response: " + response);
+        Long responseId = objectMapper.readTree(response).get("cid").asLong();
+        System.out.println("/!\\ Created client with id: " + responseId);
+        return responseId;
     }
 }

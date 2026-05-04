@@ -43,8 +43,8 @@ public class BoatService {
 
     public Boat createBoat(BoatCreationRequest boatRequest) throws InvalidBoatException {
         Boat boat = boatMapper.toDomainFromRequestCreation(boatRequest);
-        boatRepository.save(boatMapper.toEntityFromDomain(boat));
-        return boat;
+        BoatEntity savedBoat = boatRepository.save(boatMapper.toEntityFromDomain(boat));
+        return boatMapper.toDomainFromEntity(savedBoat);
     }
 
     public Boat deleteBoatById(Long id) throws BoatDoesNotExistException {
@@ -55,6 +55,7 @@ public class BoatService {
                 throw new BoatCannotBeDeletedException(String.format("Boat with id %d cannot be deleted because it has active reservations", id));
             }
         }
+        boatRepository.delete(boatToBeDeleted.get());
         return boatToBeDeleted.map(boatMapper::toDomainFromEntity).orElseThrow(() -> new BoatDoesNotExistException(String.format("No boat associated with id %d", id)));
     }
 
