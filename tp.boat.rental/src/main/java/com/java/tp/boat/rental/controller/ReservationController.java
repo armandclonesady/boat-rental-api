@@ -49,7 +49,7 @@ public class ReservationController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<ReservationResponse> postReservation(@RequestBody @Valid ReservationCreationRequest reservationCreationRequest) throws ClientHasNoLicenseException, ReservationForTooManyPeopleException, ClientDoesNotExistException, BoatDoesNotExistException, ReservationStartIsAfterEndException, BoatAlreadyReservedForDateException {
+    public ResponseEntity<ReservationResponse> postReservation(@RequestBody @Valid ReservationCreationRequest reservationCreationRequest) {
         return ResponseEntity.ok(reservationMapperMapper.toResponseFromDomain(reservationService.createReservation(reservationCreationRequest)));
     }
     

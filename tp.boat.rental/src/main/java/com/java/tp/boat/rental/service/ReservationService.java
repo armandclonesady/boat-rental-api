@@ -1,15 +1,11 @@
 package com.java.tp.boat.rental.service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 import org.springframework.stereotype.Service;
 
-import com.java.tp.boat.rental.exceptions.boat.BoatDoesNotExistException;
-import com.java.tp.boat.rental.exceptions.client.ClientDoesNotExistException;
 import com.java.tp.boat.rental.exceptions.reservation.BoatAlreadyReservedForDateException;
-import com.java.tp.boat.rental.exceptions.reservation.ClientHasNoLicenseException;
-import com.java.tp.boat.rental.exceptions.reservation.ReservationForTooManyPeopleException;
-import com.java.tp.boat.rental.exceptions.reservation.ReservationStartIsAfterEndException;
 import com.java.tp.boat.rental.model.business.Reservation;
 import com.java.tp.boat.rental.model.entity.ReservationStatus;
 import com.java.tp.boat.rental.model.request.ReservationCreationRequest;
@@ -47,32 +43,22 @@ public class ReservationService {
      */
     public Reservation createReservation(ReservationCreationRequest reservationRequest) {
         Reservation reservation = reservationMapper.toDomainFromRequestCreation(reservationRequest);
-        ArrayList<Reservation> reservations = getAllReservations();
-        for (Reservation resInstance : reservations) {
-            if (!resInstance.getBoat().getBid().equals(reservation.getBoat().getBid())) {
-                continue;
-            }
-            ReservationStatus resInstanceStatus = resInstance.getReservationStatus();
-            if (!(resInstanceStatus.equals(ReservationStatus.UPCOMING) || resInstanceStatus.equals(ReservationStatus.ONGOING))) {
-                continue;
-            }
-            //TODO: refaire cette condition
-            if (resInstanceStatus.equals(ReservationStatus.ONGOING)) {
-                throw new BoatAlreadyReservedForDateException(String.format("Boat with id %d is already reserved for the given dates", reservation.getBoat().getBid()));
-            }
+        if (checkIsAvailable(reservation.getBoat().getBid(), reservation.getStartTime().toLocalDate(), reservation.getEndTime().toLocalDate())) {
+            reservationsRepository.save(reservationMapper.toEntityFromDomain(reservation));
+        } else {
+            throw new BoatAlreadyReservedForDateException(String.format("Boat with id %d is already reserved for the given dates", reservation.getBoat().getBid()));
         }
-        reservationsRepository.save(reservationMapper.toEntityFromDomain(reservation));
         return reservation;
     }
 
-    public boolean checkIsAvailable(Long bid) {
+    public boolean checkIsAvailable(Long bid, LocalDate startTime, LocalDate endTime) {
         ArrayList<Reservation> reservations = (ArrayList<Reservation>) reservationsRepository.findByBid(bid);
         for (Reservation reservation : reservations) {
-            if (reservation.getReservationStatus().equals(ReservationStatus.ONGOING)) {
-                return true;
+            if (reservation.getStartTime().toLocalDate().isBefore(endTime) || reservation.getEndTime().toLocalDate().isAfter(startTime)) {
+                return false;
             }
         }
-        return false;
+        return true;
     }
 
     public Reservation deleteReservation(Long id) {
@@ -89,15 +75,21 @@ public class ReservationService {
         return reservationToBeDeleted;
     }
 
-    public Reservation editReservation(ReservationCreationRequest existingReservationRequest, ReservationCreationRequest newReservationRequest) throws ClientHasNoLicenseException, ReservationForTooManyPeopleException, ClientDoesNotExistException, BoatDoesNotExistException, ReservationStartIsAfterEndException, BoatAlreadyReservedForDateException {
+    public Reservation editReservation(ReservationCreationRequest existingReservationRequest, ReservationCreationRequest newReservationRequest) {
         Reservation existingReservation = reservationMapper.toDomainFromRequestCreation(existingReservationRequest);
+        if (!checkIsAvailable(existingReservation.getBoat().getBid(), existingReservation.getStartTime().toLocalDate(), existingReservation.getEndTime().toLocalDate())) {
+            throw new BoatAlreadyReservedForDateException(String.format("Boat with id %d is already reserved for the given dates", existingReservation.getBoat().getBid()));
+        }
         existingReservation.updateWith(reservationMapper.toDomainFromRequestCreation(newReservationRequest));
         reservationsRepository.save(reservationMapper.toEntityFromDomain(existingReservation));
         return existingReservation;
     }
 
-    public Reservation updateReservation(Long id, ReservationCreationRequest reservationUpdateRequest) throws ClientHasNoLicenseException, ReservationForTooManyPeopleException, ClientDoesNotExistException, BoatDoesNotExistException, ReservationStartIsAfterEndException, BoatAlreadyReservedForDateException {
+    public Reservation updateReservation(Long id, ReservationCreationRequest reservationUpdateRequest) {
         Reservation existingReservation = getReservationById(id);
+        if (!checkIsAvailable(existingReservation.getBoat().getBid(), existingReservation.getStartTime().toLocalDate(), existingReservation.getEndTime().toLocalDate())) {
+            throw new BoatAlreadyReservedForDateException(String.format("Boat with id %d is already reserved for the given dates", existingReservation.getBoat().getBid()));
+        }
         Reservation reservation = reservationMapper.toDomainFromRequestCreation(reservationUpdateRequest);
         existingReservation.updateWith(reservation);
         reservationsRepository.save(reservationMapper.toEntityFromDomain(existingReservation));
