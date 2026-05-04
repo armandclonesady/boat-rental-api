@@ -2,6 +2,7 @@ package com.java.tp.boat.rental.service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -52,7 +53,7 @@ public class ReservationService {
     }
 
     public boolean checkIsAvailable(Long bid, LocalDate startTime, LocalDate endTime) {
-        ArrayList<Reservation> reservations = (ArrayList<Reservation>) reservationsRepository.findByBidBid(bid);
+        ArrayList<Reservation> reservations = (ArrayList<Reservation>) reservationsRepository.findByBidBid(bid).stream().map(reservationMapper::toDomainFromEntity).collect(Collectors.toList());
         for (Reservation reservation : reservations) {
             if (reservation.getStartTime().toLocalDate().isBefore(endTime) || reservation.getEndTime().toLocalDate().isAfter(startTime)) {
                 return false;
@@ -94,5 +95,17 @@ public class ReservationService {
         existingReservation.updateWith(reservation);
         reservationsRepository.save(reservationMapper.toEntityFromDomain(existingReservation));
         return existingReservation;
+    }
+
+    public ArrayList<Reservation> getReservationByCidAndBid(Long cid, Long bid) {
+        return (ArrayList<Reservation>) reservationsRepository.findByCidCidAndBidBid(cid, bid).stream().map(reservationMapper::toDomainFromEntity).collect(Collectors.toList());
+    }
+
+    public ArrayList<Reservation> getReservationsByCid(Long cid) {
+        return (ArrayList<Reservation>) reservationsRepository.findByCidCid(cid).stream().map(reservationMapper::toDomainFromEntity).collect(Collectors.toList());
+    }
+
+    public ArrayList<Reservation> getReservationsByBid(Long bid) {
+        return (ArrayList<Reservation>) reservationsRepository.findByBidBid(bid).stream().map(reservationMapper::toDomainFromEntity).collect(Collectors.toList());
     }
 }
