@@ -5,11 +5,11 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import com.java.tp.boat.rental.exceptions.boat.BoatCannotBeDeletedException;
 import com.java.tp.boat.rental.exceptions.boat.BoatDoesNotExistException;
 import com.java.tp.boat.rental.exceptions.boat.InvalidBoatException;
 import com.java.tp.boat.rental.model.business.Boat;
 import com.java.tp.boat.rental.model.entity.BoatEntity;
-import com.java.tp.boat.rental.model.entity.ReservationEntity;
 import com.java.tp.boat.rental.model.request.BoatCreationRequest;
 import com.java.tp.boat.rental.model.request.BoatUpdateRequest;
 import com.java.tp.boat.rental.repository.BoatRepository;
@@ -47,7 +47,9 @@ public class BoatService {
 
     public Boat deleteBoatById(Long id) throws BoatDoesNotExistException {
         Optional<BoatEntity> boatToBeDeleted = boatRepository.findById(id);
-        boatRepository.delete(boatToBeDeleted.get());
+        if (reservationService.getReservationsByBid(id).size() > 0) {
+            throw new BoatCannotBeDeletedException(String.format("Boat with id %d has active reservations and cannot be deleted", id));
+        }
         return boatToBeDeleted.map(boatMapper::toDomainFromEntity).orElseThrow(() -> new BoatDoesNotExistException(String.format("No boat associated with id %d", id)));
     }
 
