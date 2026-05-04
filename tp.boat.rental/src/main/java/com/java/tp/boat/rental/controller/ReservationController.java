@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.java.tp.boat.rental.model.request.ReservationCreationRequest;
-import com.java.tp.boat.rental.model.request.ReservationUpdateRequest;
 import com.java.tp.boat.rental.model.response.ReservationResponse;
 import com.java.tp.boat.rental.service.ReservationService;
 import com.java.tp.boat.rental.utils.mappers.ReservationMapper;

@@ -45,9 +45,6 @@ public class BoatService {
 
     public Boat deleteBoatById(Long id) throws BoatDoesNotExistException {
         Optional<BoatEntity> boatToBeDeleted = boatRepository.findById(id);
-        if (boatToBeDeleted.isPresent()) {
-            boatRepository.delete(boatToBeDeleted.get());
-        }
         return boatToBeDeleted.map(boatMapper::toDomainFromEntity).orElseThrow(() -> new BoatDoesNotExistException(String.format("No boat associated with id %d", id)));
     }
 

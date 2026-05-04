@@ -43,9 +43,6 @@ public class ClientService {
 
     public Client deleteClientById(Long id) {
         Optional<ClientEntity> clientToBeDeleted = clientRepository.findById(id);
-        if (clientToBeDeleted.isPresent()) {
-            clientRepository.delete(clientToBeDeleted.get());
-        }
         return clientToBeDeleted.map(clientMapper::toDomainFromEntity).orElseThrow(() -> new ClientDoesNotExistException(String.format("No client associated with id %d", id)));
     }
 
