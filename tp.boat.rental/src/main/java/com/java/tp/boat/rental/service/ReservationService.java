@@ -10,6 +10,7 @@ import com.java.tp.boat.rental.exceptions.reservation.BoatAlreadyReservedForDate
 import com.java.tp.boat.rental.model.business.Reservation;
 import com.java.tp.boat.rental.model.entity.ReservationStatus;
 import com.java.tp.boat.rental.model.request.ReservationCreationRequest;
+import com.java.tp.boat.rental.model.request.ReservationUpdateRequest;
 import com.java.tp.boat.rental.repository.ReservationRepository;
 import com.java.tp.boat.rental.utils.mappers.ReservationMapper;
 
@@ -86,13 +87,12 @@ public class ReservationService {
         return existingReservation;
     }
 
-    public Reservation updateReservation(Long id, ReservationCreationRequest reservationUpdateRequest) {
+    public Reservation updateReservation(Long id, ReservationUpdateRequest reservationUpdateRequest) {
         Reservation existingReservation = getReservationById(id);
         if (!checkIsAvailable(existingReservation.getBoat().getBid(), existingReservation.getStartTime().toLocalDate(), existingReservation.getEndTime().toLocalDate())) {
             throw new BoatAlreadyReservedForDateException(String.format("Boat with id %d is already reserved for the given dates", existingReservation.getBoat().getBid()));
         }
-        Reservation reservation = reservationMapper.toDomainFromRequestCreation(reservationUpdateRequest);
-        existingReservation.updateWith(reservation);
+        existingReservation.updateWith(reservationMapper.toDomainFromRequestUpdate(reservationUpdateRequest));
         reservationsRepository.save(reservationMapper.toEntityFromDomain(existingReservation));
         return existingReservation;
     }

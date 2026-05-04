@@ -2,6 +2,11 @@ package com.java.tp.boat.rental.utils.mappers;
 
 import org.springframework.stereotype.Component;
 
+import com.java.tp.boat.rental.exceptions.boat.BoatDoesNotExistException;
+import com.java.tp.boat.rental.exceptions.client.ClientDoesNotExistException;
+import com.java.tp.boat.rental.exceptions.reservation.ClientHasNoLicenseException;
+import com.java.tp.boat.rental.exceptions.reservation.ReservationForTooManyPeopleException;
+import com.java.tp.boat.rental.exceptions.reservation.ReservationStartIsAfterEndException;
 import com.java.tp.boat.rental.model.business.Boat;
 import com.java.tp.boat.rental.model.entity.BoatEntity;
 import com.java.tp.boat.rental.model.entity.BoatTypes;
@@ -105,5 +110,21 @@ public class BoatMapper implements Mapper<Boat, BoatEntity, BoatCreationRequest,
         boatRequest.setDeposit(boat.getDeposit());
         boatRequest.setNeedsLicense(boat.getNeedsLicense());
         return boatRequest;
+    }
+
+    @Override
+    public Boat toDomainFromRequestUpdate(BoatUpdateRequest requestUpdate) throws ClientHasNoLicenseException, ReservationForTooManyPeopleException, ClientDoesNotExistException, BoatDoesNotExistException, ReservationStartIsAfterEndException {
+        Boat boat = new Boat(
+            requestUpdate.getBid(),
+            requestUpdate.getName(),
+            toBoatType(requestUpdate.getType()),
+            requestUpdate.getMaxCapacity(),
+            requestUpdate.getLength(),
+            requestUpdate.getDailyRate(),
+            requestUpdate.getDeposit(),
+            requestUpdate.getNeedsLicense()
+        );
+        return boat;
+
     }
 }

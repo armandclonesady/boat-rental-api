@@ -109,4 +109,16 @@ public class ReservationMapper implements Mapper<Reservation, ReservationEntity,
         reservationCreationRequest.setEndTime(requestUpdate.getEndTime());
         return reservationCreationRequest;
     }
+
+    @Override
+    public Reservation toDomainFromRequestUpdate(ReservationUpdateRequest requestUpdate) {
+        Reservation reservation = Reservation.fromRequest(
+            clientService.getClientById(requestUpdate.getCid()),
+            boatService.getBoatById(requestUpdate.getBid()),
+            requestUpdate.getAmountOfPeople(),
+            requestUpdate.getStartTime(),
+            requestUpdate.getEndTime()
+        );
+        return reservation;
+    }
 }

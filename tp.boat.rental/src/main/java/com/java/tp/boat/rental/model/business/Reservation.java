@@ -71,6 +71,16 @@ public class Reservation {
         return r;
     }
 
+    public static Reservation fromRequest(Client client, Boat boat, Integer amountOfPeople, Date startTime, Date endTime) {
+        Reservation r = new Reservation();
+        r.client = client;
+        r.boat = boat;
+        r.amountOfPeople = amountOfPeople;
+        r.startTime = startTime;
+        r.endTime = endTime;
+        return r;
+    }
+
     // -- RG2
     private ReservationStatus calculateReservationStatus(Date startTime, Date endTime) {
         LocalDate now = LocalDate.now();
@@ -120,5 +130,6 @@ public class Reservation {
             this.reservationStatus = calculateReservationStatus(this.startTime, this.endTime);
         }
         this.price = calculatePrice(this.boat, this.startTime, this.endTime);
+        this.deposit = calculateDeposit(this.boat);
     }
 }

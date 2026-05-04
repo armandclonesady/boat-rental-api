@@ -83,4 +83,18 @@ public class ClientMapper implements Mapper<Client, ClientEntity, ClientCreation
         clientRequest.setHasLicense(client.getHasLicense());
         return clientRequest;
     }
+
+    @Override
+    public Client toDomainFromRequestUpdate(ClientUpdateRequest requestUpdate) {
+        Client client = new Client(
+            requestUpdate.getCid(),
+            requestUpdate.getFirstName(),
+            requestUpdate.getLastName(),
+            requestUpdate.getEmail(),
+            requestUpdate.getPhoneNumber(),
+            requestUpdate.getHasLicense()
+        );
+        return client;
+
+    }
 }
