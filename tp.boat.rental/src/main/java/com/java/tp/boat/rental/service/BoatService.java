@@ -9,7 +9,9 @@ import com.java.tp.boat.rental.exceptions.boat.BoatCannotBeDeletedException;
 import com.java.tp.boat.rental.exceptions.boat.BoatDoesNotExistException;
 import com.java.tp.boat.rental.exceptions.boat.InvalidBoatException;
 import com.java.tp.boat.rental.model.business.Boat;
+import com.java.tp.boat.rental.model.business.Reservation;
 import com.java.tp.boat.rental.model.entity.BoatEntity;
+import com.java.tp.boat.rental.model.entity.ReservationStatus;
 import com.java.tp.boat.rental.model.request.BoatCreationRequest;
 import com.java.tp.boat.rental.model.request.BoatUpdateRequest;
 import com.java.tp.boat.rental.repository.BoatRepository;
@@ -47,8 +49,11 @@ public class BoatService {
 
     public Boat deleteBoatById(Long id) throws BoatDoesNotExistException {
         Optional<BoatEntity> boatToBeDeleted = boatRepository.findById(id);
-        if (reservationService.getReservationsByBid(id).size() > 0) {
-            throw new BoatCannotBeDeletedException(String.format("Boat with id %d has active reservations and cannot be deleted", id));
+        ArrayList<Reservation> reservations = reservationService.getReservationsByBid(id);
+        for (Reservation reservation : reservations) {
+            if (reservation.getReservationStatus() != ReservationStatus.CANCELED) {
+                throw new BoatCannotBeDeletedException(String.format("Boat with id %d cannot be deleted because it has active reservations", id));
+            }
         }
         return boatToBeDeleted.map(boatMapper::toDomainFromEntity).orElseThrow(() -> new BoatDoesNotExistException(String.format("No boat associated with id %d", id)));
     }
