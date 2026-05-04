@@ -48,18 +48,18 @@ public class BoatController {
         return ResponseEntity.ok(boatMapper.toResponseFromDomain(boatService.getBoatById(id)));
     }
 
-    @PostMapping("/")
+    @PostMapping("/create")
     public ResponseEntity<BoatResponse> postBoat(@RequestBody @Valid BoatCreationRequest boatRequest) throws InvalidBoatException {
         return ResponseEntity.status(HttpStatus.CREATED).body(boatMapper.toResponseFromDomain(boatService.createBoat(boatRequest)));
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<BoatResponse> deleteBoat(@PathVariable Long id) throws BoatDoesNotExistException {
         //TODO: RG8 - politique d'annulation
         return ResponseEntity.ok(boatMapper.toResponseFromDomain(boatService.deleteBoatById(id)));
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/update/{id}")
     public ResponseEntity<BoatResponse> putBoat(@PathVariable Long id, @RequestBody @Valid BoatUpdateRequest boatUpdateRequest) throws InvalidBoatException {
         return ResponseEntity.ok(boatMapper.toResponseFromDomain(boatService.updateBoat(id, boatUpdateRequest)));
     }

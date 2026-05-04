@@ -48,17 +48,17 @@ public class ClientController {
         return ResponseEntity.ok(clientMapper.toResponseFromDomain(clientService.getClientById(id)));
     }
 
-    @PostMapping("/")
+    @PostMapping("/create")
     public ResponseEntity<ClientResponse> postClient(@RequestBody @Valid ClientCreationRequest clientRequest) throws InvalidClientException {
             return ResponseEntity.status(HttpStatus.CREATED).body(clientMapper.toResponseFromDomain(clientService.createClient(clientRequest)));
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<ClientResponse> deleteClient(@PathVariable Long id) throws ClientDoesNotExistException {
         return ResponseEntity.ok(clientMapper.toResponseFromDomain(clientService.deleteClientById(id)));
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/update/{id}")
     public ResponseEntity<ClientResponse> putClient(@PathVariable Long id, @RequestBody @Valid ClientUpdateRequest client) throws InvalidClientException {
         return ResponseEntity.ok(clientMapper.toResponseFromDomain(clientService.updateClient(id, client)));
     }

@@ -5,13 +5,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.java.tp.boat.rental.exceptions.boat.BoatDoesNotExistException;
-import com.java.tp.boat.rental.exceptions.client.ClientDoesNotExistException;
-import com.java.tp.boat.rental.exceptions.reservation.BoatAlreadyReservedForDateException;
-import com.java.tp.boat.rental.exceptions.reservation.ClientHasNoLicenseException;
-import com.java.tp.boat.rental.exceptions.reservation.ReservationForTooManyPeopleException;
-import com.java.tp.boat.rental.exceptions.reservation.ReservationStartIsAfterEndException;
 import com.java.tp.boat.rental.model.request.ReservationCreationRequest;
+import com.java.tp.boat.rental.model.request.ReservationUpdateRequest;
 import com.java.tp.boat.rental.model.response.ReservationResponse;
 import com.java.tp.boat.rental.service.ReservationService;
 import com.java.tp.boat.rental.utils.mappers.ReservationMapper;
@@ -36,25 +31,31 @@ import org.springframework.web.bind.annotation.RequestBody;
 public class ReservationController {
     
     private ReservationService reservationService;
-    private ReservationMapper reservationMapperMapper;
+    private ReservationMapper reservationMapper;
 
     @GetMapping("/")
     public Iterable<ReservationResponse> getAllReservations() {
-        return reservationService.getAllReservations().stream().map(reservationMapperMapper::toResponseFromDomain).toList();
+        return reservationService.getAllReservations().stream().map(reservationMapper::toResponseFromDomain).toList();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ReservationResponse> getReservationById(@PathVariable Long id) {
-        return ResponseEntity.ok(reservationMapperMapper.toResponseFromDomain(reservationService.getReservationById(id)));
+        return ResponseEntity.ok(reservationMapper.toResponseFromDomain(reservationService.getReservationById(id)));
     }
 
-    @PostMapping("/")
+    @PostMapping("/create")
     public ResponseEntity<ReservationResponse> postReservation(@RequestBody @Valid ReservationCreationRequest reservationCreationRequest) {
-        return ResponseEntity.ok(reservationMapperMapper.toResponseFromDomain(reservationService.createReservation(reservationCreationRequest)));
+        return ResponseEntity.ok(reservationMapper.toResponseFromDomain(reservationService.createReservation(reservationCreationRequest)));
     }
     
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<ReservationResponse> deleteReservation(@PathVariable Long id) {
-        return ResponseEntity.ok(reservationMapperMapper.toResponseFromDomain(reservationService.deleteReservation(id)));
+        return ResponseEntity.ok(reservationMapper.toResponseFromDomain(reservationService.deleteReservation(id)));
     }
+
+    @PostMapping("/cancel/{id}")
+    public ResponseEntity<ReservationResponse> cancelReservation(@PathVariable Long id) {
+        return ResponseEntity.ok(reservationMapper.toResponseFromDomain(reservationService.cancelReservationById(id)));
+    }
+    
 }
