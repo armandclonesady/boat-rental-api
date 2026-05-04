@@ -13,6 +13,4 @@ public interface Mapper<Model, Entity, RequestCreation, RequestUpdate, Response>
     Response toResponseFromDomain(Model model);
     Response toResponseFromEntity(Entity entity);
     RequestCreation toRequestCreationFromRequestUpdate(RequestUpdate requestUpdate);
-    
-    
 }

@@ -45,7 +45,7 @@ public class ReservationService {
      *      )
      * - RG1 pas de reservation de ce bateau sur le même créeau 
      */
-    public Reservation createReservation(ReservationCreationRequest reservationRequest) throws ClientHasNoLicenseException, ReservationForTooManyPeopleException, ClientDoesNotExistException, BoatDoesNotExistException, ReservationStartIsAfterEndException, BoatAlreadyReservedForDateException {
+    public Reservation createReservation(ReservationCreationRequest reservationRequest) {
         Reservation reservation = reservationMapper.toDomainFromRequestCreation(reservationRequest);
         ArrayList<Reservation> reservations = getAllReservations();
         for (Reservation resInstance : reservations) {
@@ -56,12 +56,23 @@ public class ReservationService {
             if (!(resInstanceStatus.equals(ReservationStatus.UPCOMING) || resInstanceStatus.equals(ReservationStatus.ONGOING))) {
                 continue;
             }
+            //TODO: refaire cette condition
             if (resInstanceStatus.equals(ReservationStatus.ONGOING)) {
                 throw new BoatAlreadyReservedForDateException(String.format("Boat with id %d is already reserved for the given dates", reservation.getBoat().getBid()));
             }
         }
         reservationsRepository.save(reservationMapper.toEntityFromDomain(reservation));
         return reservation;
+    }
+
+    public boolean checkIsAvailable(Long bid) {
+        ArrayList<Reservation> reservations = (ArrayList<Reservation>) reservationsRepository.findByBid(bid);
+        for (Reservation reservation : reservations) {
+            if (reservation.getReservationStatus().equals(ReservationStatus.ONGOING)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public Reservation deleteReservation(Long id) {

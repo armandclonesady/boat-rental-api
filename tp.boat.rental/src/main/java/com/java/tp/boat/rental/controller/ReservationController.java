@@ -14,7 +14,6 @@ import com.java.tp.boat.rental.exceptions.reservation.ReservationStartIsAfterEnd
 import com.java.tp.boat.rental.model.request.ReservationCreationRequest;
 import com.java.tp.boat.rental.model.response.ReservationResponse;
 import com.java.tp.boat.rental.service.ReservationService;
-import com.java.tp.boat.rental.utils.mappers.ClientMapper;
 import com.java.tp.boat.rental.utils.mappers.ReservationMapper;
 
 import jakarta.validation.Valid;
@@ -24,7 +23,6 @@ import lombok.Data;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
