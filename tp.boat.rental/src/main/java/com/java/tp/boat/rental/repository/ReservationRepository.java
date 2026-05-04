@@ -11,9 +11,9 @@ import com.java.tp.boat.rental.model.entity.ReservationEntity;
 @Repository
 public interface ReservationRepository extends CrudRepository<ReservationEntity, Long>{ 
 
-    List<ReservationEntity> findByCid(Long cid);
+    List<ReservationEntity> findByCidCid(Long cid);
 
-    List<Reservation> findByBid(Long bid);
+    List<Reservation> findByBidBid(Long bid);
 
-    List<ReservationEntity> findByCidAndBid(Long cid, Long bid);
+    List<ReservationEntity> findByCidCidAndBidBid(Long cid, Long bid);
 }

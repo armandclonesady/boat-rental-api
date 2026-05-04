@@ -52,7 +52,7 @@ public class ReservationService {
     }
 
     public boolean checkIsAvailable(Long bid, LocalDate startTime, LocalDate endTime) {
-        ArrayList<Reservation> reservations = (ArrayList<Reservation>) reservationsRepository.findByBid(bid);
+        ArrayList<Reservation> reservations = (ArrayList<Reservation>) reservationsRepository.findByBidBid(bid);
         for (Reservation reservation : reservations) {
             if (reservation.getStartTime().toLocalDate().isBefore(endTime) || reservation.getEndTime().toLocalDate().isAfter(startTime)) {
                 return false;
