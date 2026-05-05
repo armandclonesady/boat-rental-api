@@ -132,18 +132,28 @@ public class ReservationService {
         ReservationEntity existingReservationEntity = reservationsRepository.findById(id).orElseThrow(() -> new ReservationDoesNotExist("No reservation associated with id " + id));
         Client client = clientService.getClientById(existingReservationEntity.getCid().getCid());
         Boat boat = boatService.getBoatById(existingReservationEntity.getBid().getBid());
-        Reservation updateReservation = reservationMapper.toDomainFromRequestUpdate(reservationUpdateRequest, client, boat);
-        updateReservation.setRid(id);
+        Reservation existingReservation = reservationMapper.toDomainFromEntity(existingReservationEntity, client, boat);
+        
+        Client newClient = client;
+        Boat newBoat = boat;
+        if (reservationUpdateRequest.getCid() != null) {
+            newClient = clientService.getClientById(reservationUpdateRequest.getCid());
+        }
+        if (reservationUpdateRequest.getBid() != null) {
+            newBoat = boatService.getBoatById(reservationUpdateRequest.getBid());
+        }
+        Reservation updateReservation = reservationMapper.toDomainFromRequestUpdate(reservationUpdateRequest, newClient, newBoat);
 
-        if (!checkIsAvailable(boat.getBid(), updateReservation.getStartTime().toLocalDate(), updateReservation.getEndTime().toLocalDate())) {
+        if (!checkIsAvailable(newBoat.getBid(), updateReservation.getStartTime().toLocalDate(), updateReservation.getEndTime().toLocalDate())) {
             throw new BoatAlreadyReservedForDateException(String.format("Boat with id %d is already reserved for the given dates", updateReservation.getBoat().getBid()));
         }
 
-        ClientEntity clientEntity = clientService.getClientEntityById(updateReservation.getClient().getCid());
-        BoatEntity boatEntity = boatService.getBoatEntityById(updateReservation.getBoat().getBid());
-        reservationsRepository.save(reservationMapper.toEntityFromDomain(updateReservation, clientEntity, boatEntity));
+        existingReservation.updateWith(updateReservation);
+        ClientEntity clientEntity = clientService.getClientEntityById(existingReservation.getClient().getCid());
+        BoatEntity boatEntity = boatService.getBoatEntityById(existingReservation.getBoat().getBid());
+        reservationsRepository.save(reservationMapper.toEntityFromDomain(existingReservation, clientEntity, boatEntity));
 
-        return updateReservation;
+        return existingReservation;
     }
 
     public ArrayList<Reservation> getReservationByCidAndBid(Long cid, Long bid) {
