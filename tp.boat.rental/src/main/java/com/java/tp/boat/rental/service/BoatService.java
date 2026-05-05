@@ -77,4 +77,8 @@ public class BoatService {
         boatRepository.save(boatMapper.toEntityFromDomain(existingBoatDomain));
         return existingBoatDomain;
     } 
+    
+    public BoatEntity getBoatEntityById(Long id) throws BoatDoesNotExistException {
+        return boatRepository.findById(id).orElseThrow(() -> new BoatDoesNotExistException(String.format("No boat associated with id %d", id)));
+    }
 }

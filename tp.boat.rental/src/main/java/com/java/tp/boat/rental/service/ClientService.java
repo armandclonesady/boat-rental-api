@@ -61,5 +61,7 @@ public class ClientService {
         return updatedClient;
     } 
 
-
+    public ClientEntity getClientEntityById(Long id) throws ClientDoesNotExistException {
+        return clientRepository.findById(id).orElseThrow(() -> new ClientDoesNotExistException(String.format("No client associated with id %d", id)));
+    }
 }

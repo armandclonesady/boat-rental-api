@@ -1,5 +1,6 @@
 package com.java.tp.boat.rental.controller;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -46,7 +47,8 @@ public class ReservationController {
 
     @PostMapping("/create")
     public ResponseEntity<ReservationResponse> postReservation(@RequestBody @Valid ReservationCreationRequest reservationCreationRequest) {
-        return ResponseEntity.ok(reservationMapper.toResponseFromDomain(reservationService.createReservation(reservationCreationRequest)));
+        return ResponseEntity.status(HttpStatus.CREATED).body(reservationMapper.toResponseFromDomain(reservationService.createReservation(reservationCreationRequest)));
+
     }
     
     @DeleteMapping("/delete/{id}")
