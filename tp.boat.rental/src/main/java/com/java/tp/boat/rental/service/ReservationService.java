@@ -92,12 +92,24 @@ public class ReservationService {
         return true;
     }
 
+    public boolean checkIsAvailable(Long bid, LocalDate startTime, LocalDate endTime, Long reservationId) {
+        ArrayList<Reservation> reservations = new ArrayList<>();
+        for (ReservationEntity reservationEntity : reservationsRepository.findByBidBid(bid)) {
+            Client client = clientService.getClientById(reservationEntity.getCid().getCid());
+            Boat boat = boatService.getBoatById(reservationEntity.getBid().getBid());
+            reservations.add(reservationMapper.toDomainFromEntity(reservationEntity, client, boat));
+        }
+        for (Reservation reservation : reservations) {
+            if (!reservation.getRid().equals(reservationId) && (reservation.getStartTime().toLocalDate().isBefore(endTime) || reservation.getEndTime().toLocalDate().isAfter(startTime))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public Reservation deleteReservation(Long id) {
         Reservation reservation = getReservationById(id);
-        reservation.setReservationStatus(ReservationStatus.CANCELED);
-        ClientEntity clientEntity = clientService.getClientEntityById(reservation.getClient().getCid());
-        BoatEntity boatEntity = boatService.getBoatEntityById(reservation.getBoat().getBid());
-        reservationsRepository.save(reservationMapper.toEntityFromDomain(reservation, clientEntity, boatEntity));
+        reservationsRepository.deleteById(id);
         return reservation;
     }
 
@@ -136,15 +148,24 @@ public class ReservationService {
         
         Client newClient = client;
         Boat newBoat = boat;
+
+        //pas sur de cette approche
         if (reservationUpdateRequest.getCid() != null) {
             newClient = clientService.getClientById(reservationUpdateRequest.getCid());
         }
         if (reservationUpdateRequest.getBid() != null) {
             newBoat = boatService.getBoatById(reservationUpdateRequest.getBid());
         }
+        if (reservationUpdateRequest.getStartTime() != null) {
+            existingReservation.setStartTime(reservationUpdateRequest.getStartTime());
+        }
+        if (reservationUpdateRequest.getEndTime() != null) {
+            existingReservation.setEndTime(reservationUpdateRequest.getEndTime());
+        }
+
         Reservation updateReservation = reservationMapper.toDomainFromRequestUpdate(reservationUpdateRequest, newClient, newBoat);
 
-        if (!checkIsAvailable(newBoat.getBid(), updateReservation.getStartTime().toLocalDate(), updateReservation.getEndTime().toLocalDate())) {
+        if (!checkIsAvailable(newBoat.getBid(), existingReservation.getStartTime().toLocalDate(), existingReservation.getEndTime().toLocalDate(), existingReservation.getRid())) {
             throw new BoatAlreadyReservedForDateException(String.format("Boat with id %d is already reserved for the given dates", updateReservation.getBoat().getBid()));
         }
 

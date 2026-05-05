@@ -126,10 +126,10 @@ public class Reservation {
         this.amountOfPeople = domainFromRequestCreation.getAmountOfPeople() != null ? domainFromRequestCreation.getAmountOfPeople() : this.amountOfPeople;
         this.startTime = domainFromRequestCreation.getStartTime() != null ? domainFromRequestCreation.getStartTime() : this.startTime;
         this.endTime = domainFromRequestCreation.getEndTime() != null ? domainFromRequestCreation.getEndTime() : this.endTime;
-        if (!domainFromRequestCreation.getReservationStatus().equals(ReservationStatus.CANCELED)) {
-            this.reservationStatus = calculateReservationStatus(this.startTime, this.endTime);
-        }
         this.price = calculatePrice(this.boat, this.startTime, this.endTime);
         this.deposit = calculateDeposit(this.boat);
+        if (this.reservationStatus != ReservationStatus.CANCELED) {
+            this.reservationStatus = calculateReservationStatus(this.startTime, this.endTime);
+        }
     }
 }

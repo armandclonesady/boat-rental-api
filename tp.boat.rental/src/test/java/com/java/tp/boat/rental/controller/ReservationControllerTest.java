@@ -8,6 +8,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -52,6 +54,69 @@ public class ReservationControllerTest {
         assert(responseId.equals(addedReservationId));
      }
 
+     
+    @Test
+    public void testPostReservationWorks() throws Exception {
+        addedBoatId = createTestBoat();
+        addedClientId = createTestClient();
+        String response = mockMvc.perform(post("/reservations/create")
+        .contentType("application/json")
+        .content(
+            String.format("{ \"bid\": %d, \"cid\": %d, \"startTime\": \"2027-07-01\", \"endTime\": \"2027-07-10\", \"amountOfPeople\": 2 }", addedBoatId, addedClientId)
+         ))
+         .andExpect(status().isCreated())
+         .andReturn().getResponse().getContentAsString();
+        System.out.println(response);
+        Long responseId = objectMapper.readTree(response).get("rid").asLong();
+        assert(responseId != null);
+    }
+
+    @Test
+    public void testCancelReservationWorks() throws Exception {
+        addedBoatId = createTestBoat();
+        addedClientId = createTestClient();
+        addedReservationId = createTestReservation(addedBoatId, addedClientId);
+        String response = mockMvc.perform(put("/reservations/cancel/" + addedReservationId))
+        .andExpect(status().isOk())
+        .andReturn().getResponse().getContentAsString();
+        System.out.println(response);
+        Long responseId = objectMapper.readTree(response).get("rid").asLong();
+        String reservationStatus = objectMapper.readTree(response).get("reservationStatus").asText();
+        assert(responseId.equals(addedReservationId));
+        assert(reservationStatus.equals("CANCELED"));
+    }
+
+    @Test
+    public void testUpdateReservationWorks() throws Exception {
+        addedBoatId = createTestBoat();
+        addedClientId = createTestClient();
+        Long secondClientId = createTestClient("Jane");
+        addedReservationId = createTestReservation(addedBoatId, addedClientId);
+        String response = mockMvc.perform(put("/reservations/update/" + addedReservationId)
+        .contentType("application/json")
+        .content(
+            String.format("{ \"cid\": %d }", secondClientId)
+        ))
+        .andExpect(status().isOk())
+        .andReturn().getResponse().getContentAsString();
+        System.out.println(response);
+        Long responseId = objectMapper.readTree(response).get("rid").asLong();
+        assert(responseId.equals(addedReservationId));
+    }
+
+    @Test
+    public void testDeleteReservationWorks() throws Exception {
+        addedBoatId = createTestBoat();
+        addedClientId = createTestClient();
+        addedReservationId = createTestReservation(addedBoatId, addedClientId);
+        String response = mockMvc.perform(delete("/reservations/delete/" + addedReservationId))
+        .andExpect(status().isOk())
+        .andReturn().getResponse().getContentAsString();
+        System.out.println(response);
+        Long responseId = objectMapper.readTree(response).get("rid").asLong();
+        assert(responseId.equals(addedReservationId));
+    }
+
     private Long createTestBoat() throws Exception {
         String response = mockMvc.perform(post("/boats/create")
         .contentType("application/json")
@@ -67,10 +132,14 @@ public class ReservationControllerTest {
     }
 
     private Long createTestClient() throws Exception {
+        return createTestClient("John");
+    }
+
+    private Long createTestClient(String name) throws Exception {
         String response = mockMvc.perform(post("/clients/create")
         .contentType("application/json")
         .content(
-            "{ \"firstName\": \"John\", \"lastName\": \"Doe\", \"email\": \"john.doe@example.com\", \"phoneNumber\": \"1234567890\" }"
+            "{ \"firstName\": \"" + name + "\", \"lastName\": \"Doe\", \"email\": \"john.doe@example.com\", \"phoneNumber\": \"1234567890\" }"
         ))
         .andExpect(status().isCreated())
         .andReturn().getResponse().getContentAsString();
