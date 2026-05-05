@@ -86,7 +86,7 @@ public class ReservationControllerTest {
         String response = mockMvc.perform(post("/reservations/create")
         .contentType("application/json")
         .content(
-            String.format("{ \"boatId\": %d, \"clientId\": %d, \"startDate\": \"2024-07-01\", \"endDate\": \"2024-07-10\" }", boatId, clientId)
+            String.format("{ \"bid\": %d, \"cid\": %d, \"startTime\": \"2027-07-01\", \"endTime\": \"2027-07-10\", \"amountOfPeople\": 2 }", boatId, clientId)
          ))
          .andExpect(status().isCreated())
          .andReturn().getResponse().getContentAsString();

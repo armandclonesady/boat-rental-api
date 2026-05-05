@@ -9,12 +9,12 @@ import com.java.tp.boat.rental.exceptions.boat.BoatCannotBeDeletedException;
 import com.java.tp.boat.rental.exceptions.boat.BoatDoesNotExistException;
 import com.java.tp.boat.rental.exceptions.boat.InvalidBoatException;
 import com.java.tp.boat.rental.model.business.Boat;
-import com.java.tp.boat.rental.model.business.Reservation;
 import com.java.tp.boat.rental.model.entity.BoatEntity;
 import com.java.tp.boat.rental.model.entity.ReservationStatus;
 import com.java.tp.boat.rental.model.request.BoatCreationRequest;
 import com.java.tp.boat.rental.model.request.BoatUpdateRequest;
 import com.java.tp.boat.rental.repository.BoatRepository;
+import com.java.tp.boat.rental.repository.ReservationRepository;
 import com.java.tp.boat.rental.utils.mappers.BoatMapper;
 
 import lombok.AllArgsConstructor;
@@ -27,7 +27,7 @@ public class BoatService {
 
     private BoatRepository boatRepository;
     private BoatMapper boatMapper;
-    private ReservationService reservationService;
+    private ReservationRepository reservationRepository;
 
     public Boat getBoatById(Long id) throws BoatDoesNotExistException{
         return boatMapper.toDomainFromEntity(boatRepository.findById(id).orElseThrow(() -> new BoatDoesNotExistException(String.format("No boat associated with id %d", id))));
@@ -48,15 +48,17 @@ public class BoatService {
     }
 
     public Boat deleteBoatById(Long id) throws BoatDoesNotExistException {
-        Optional<BoatEntity> boatToBeDeleted = boatRepository.findById(id);
-        ArrayList<Reservation> reservations = reservationService.getReservationsByBid(id);
-        for (Reservation reservation : reservations) {
-            if (reservation.getReservationStatus() != ReservationStatus.CANCELED) {
-                throw new BoatCannotBeDeletedException(String.format("Boat with id %d cannot be deleted because it has active reservations", id));
-            }
+        BoatEntity boatToBeDeleted = boatRepository.findById(id).orElseThrow(() -> new BoatDoesNotExistException(String.format("No boat associated with id %d", id)));
+        
+        boolean hasActiveReservations = reservationRepository
+            .findByBidBid(id)
+            .stream()
+            .anyMatch(r -> r.getStatus() != ReservationStatus.CANCELED);
+        if (hasActiveReservations) {
+            throw new BoatCannotBeDeletedException(String.format("Boat with id %d cannot be deleted because it has active reservations", id));
         }
-        boatRepository.delete(boatToBeDeleted.get());
-        return boatToBeDeleted.map(boatMapper::toDomainFromEntity).orElseThrow(() -> new BoatDoesNotExistException(String.format("No boat associated with id %d", id)));
+        boatRepository.delete(boatToBeDeleted);
+        return boatMapper.toDomainFromEntity(boatToBeDeleted);
     }
 
     public Boat editBoat(BoatCreationRequest existingBoatRequest, BoatCreationRequest newBoatRequest) throws InvalidBoatException {
