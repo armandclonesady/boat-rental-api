@@ -115,6 +115,8 @@ public class ReservationControllerTest {
         System.out.println(response);
         Long responseId = objectMapper.readTree(response).get("rid").asLong();
         assert(responseId.equals(addedReservationId));
+        mockMvc.perform(get("/reservations/" + addedReservationId))
+        .andExpect(status().isNotFound());
     }
 
     private Long createTestBoat() throws Exception {
