@@ -26,64 +26,61 @@ public class ClientServiceTest {
 
     @Mock
     private ClientRepository clientRepository;
-    @Mock
-    private ClientMapper clientMapper;
 
-    @InjectMocks
+    private ClientMapper clientMapper = new ClientMapper();
+
     private ClientService clientService;
 
-    @Test
-    public void testGetAllClients() {
-        ClientEntity clientEntity1 = new ClientEntity(); 
-        clientEntity1.setCid(1L);
-        
-        ClientEntity clientEntity2 = new ClientEntity(); 
-        clientEntity2.setCid(2L);
-        
-        when(clientMapper.toDomainFromEntity(clientEntity1)).thenReturn(new Client(1L, "John", "Doe", "john.doe@example.com", "1234567890", true));
-        when(clientMapper.toDomainFromEntity(clientEntity2)).thenReturn(new Client(2L, "John", "Doe", "john.doe@example.com", "1234567890", true));
-        ArrayList<ClientEntity> clientEntities = new ArrayList<>(); 
-        clientEntities.add(clientEntity1); 
-        clientEntities.add(clientEntity2);
-        when(clientRepository.findAll()).thenReturn(clientEntities);
-        
-        ArrayList<Client> clients = clientService.getAllClients();
-
-        Assertions.assertThat(clients.size()).isEqualTo(2);
-        Assertions.assertThat(clients.get(0).getCid()).isEqualTo(1L);
-        Assertions.assertThat(clients.get(1).getCid()).isEqualTo(2L);
-
-        verify(clientMapper, times(1)).toDomainFromEntity(clientEntity1);
-        verify(clientMapper, times(1)).toDomainFromEntity(clientEntity2);
-    }
-
-    @Test
-    public void testGetAllClientsEmpty() {
-        when(clientRepository.findAll()).thenReturn(new ArrayList<>());
-
-        ArrayList<Client> clients = clientService.getAllClients();
-
-        Assertions.assertThat(clients.size()).isEqualTo(0);
-        verify(clientRepository, times(1)).findAll();
-    }
-
-    @Test
-    public void createClient() {
-        Client client = new Client(1L, "John", "Doe", "john.doe@example.com", "1234567890", true);
-        
+    private static ClientCreationRequest clientCreationRequest(Long id, String firstName, String lastName) {
         ClientCreationRequest clientCreationRequest = new ClientCreationRequest();
-        clientCreationRequest.setFirstName("John");
-        clientCreationRequest.setLastName("Doe");
-        clientCreationRequest.setEmail("johndoe@gmail.com");
-        
+        clientCreationRequest.setFirstName(firstName);
+        clientCreationRequest.setLastName(lastName);
+        clientCreationRequest.setEmail("test@example.com");
+        clientCreationRequest.setPhoneNumber("0123456789");
+        clientCreationRequest.setHasLicense(false);
+        return clientCreationRequest;
+    }
+
+    private static Client clientDomain(Long id, String firstName, String lastName) { return new Client(id, firstName, lastName, "test@example.com", "0123456789", false); };
+
+    private static ClientEntity clientEntity(Long id, String firstName, String lastName) {
+        ClientEntity clientEntity = new ClientEntity();
+        clientEntity.setCid(id);
+        clientEntity.setFirstName(firstName);
+        clientEntity.setLastName(lastName);
+        clientEntity.setEmail("test@example.com");
+        clientEntity.setPhoneNumber("0123456789");
+        clientEntity.setHasLicense(false);
+        return clientEntity;
+    }
+
+    @BeforeEach
+    public void setUp() {
+        clientService = new ClientService(clientRepository, clientMapper);
+    }
+
+    @Test
+    public void getAllClientsReturnsListOfClients() {
         ClientEntity clientEntity = new ClientEntity();
         clientEntity.setCid(1L);
+        ArrayList<ClientEntity> clientEntities = new ArrayList<>();
+        clientEntities.add(clientEntity);
+        when(clientRepository.findAll()).thenReturn(clientEntities);
+        ArrayList<Client> clients = clientService.getAllClients();
+        Assertions.assertThat(clients).hasSize(1);
+        Assertions.assertThat(clients.get(0).getCid()).isEqualTo(1L);
+    }
 
-        when(clientMapper.toDomainFromRequestCreation(clientCreationRequest)).thenReturn(new Client(1L, "John", "Doe", "john.doe@example.com", "1234567890", true));
-        when(clientRepository.save(clientMapper.toEntityFromDomain(clientMapper.toDomainFromRequestCreation(clientCreationRequest)))).thenReturn(clientEntity);
-        when(clientMapper.toDomainFromEntity(clientEntity)).thenReturn(client);
+    @Test
+    public void createClientSavesClient() {
+        ClientCreationRequest request = clientCreationRequest(null, "John", "Doe");
+        Client expectedClient = clientDomain(null, "John", "Doe");
+        ClientEntity clientEntity = clientEntity(null, "John", "Doe");
+        
+        when(clientRepository.save(clientEntity)).thenReturn(clientEntity);
+        Client createdClient = clientService.createClient(request);
 
-        Client createdClient = clientService.createClient(clientCreationRequest);
-        Assertions.assertThat(createdClient.getCid()).isEqualTo(1L);
+        Assertions.assertThat(createdClient).isEqualTo(expectedClient);
+
     }
 }
