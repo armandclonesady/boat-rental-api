@@ -5,14 +5,15 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.java.tp.boat.rental.exceptions.client.ClientDoesNotExistException;
 import com.java.tp.boat.rental.model.business.Client;
 import com.java.tp.boat.rental.model.entity.ClientEntity;
 import com.java.tp.boat.rental.model.request.ClientCreationRequest;
@@ -65,7 +66,9 @@ public class ClientServiceTest {
         clientEntity.setCid(1L);
         ArrayList<ClientEntity> clientEntities = new ArrayList<>();
         clientEntities.add(clientEntity);
+        
         when(clientRepository.findAll()).thenReturn(clientEntities);
+        
         ArrayList<Client> clients = clientService.getAllClients();
         Assertions.assertThat(clients).hasSize(1);
         Assertions.assertThat(clients.get(0).getCid()).isEqualTo(1L);
@@ -78,9 +81,62 @@ public class ClientServiceTest {
         ClientEntity clientEntity = clientEntity(null, "John", "Doe");
         
         when(clientRepository.save(clientEntity)).thenReturn(clientEntity);
+        
         Client createdClient = clientService.createClient(request);
-
         Assertions.assertThat(createdClient).isEqualTo(expectedClient);
+    }
 
+    
+    @Test
+    public void getClientByIdReturnsClient() {
+        ClientEntity clientEntity = clientEntity(1L, "John", "Doe");
+        Client expectedClient = clientDomain(1L, "John", "Doe");
+        
+        when(clientRepository.findById(1L)).thenReturn(Optional.of(clientEntity));
+
+        Client foundClient = clientService.getClientById(1L);
+        Assertions.assertThat(foundClient).isEqualTo(expectedClient);
+    }
+
+    @Test
+    public void getClientByIdThrowsExceptionWhenClientDoesNotExist() {
+        when(clientRepository.findById(1L)).thenReturn(Optional.empty());
+
+        Assertions.assertThatThrownBy(() -> clientService.getClientById(1L))
+                .isInstanceOf(ClientDoesNotExistException.class);
+    }
+
+    @Test
+    public void deleteClientByIdDeletesClient() {
+        ClientEntity clientEntity = clientEntity(1L, "John", "Doe");
+        Client expectedClient = clientDomain(1L, "John", "Doe");
+        
+        when(clientRepository.findById(1L)).thenReturn(Optional.of(clientEntity));
+
+        Client deletedClient = clientService.deleteClientById(1L);
+       
+        Assertions.assertThat(deletedClient).isEqualTo(expectedClient);
+        verify(clientRepository, times(1)).delete(clientEntity);
+    }
+
+    @Test
+    public void deleteClientByIdThrowsExceptionWhenClientDoesNotExist() {
+        when(clientRepository.findById(1L)).thenReturn(Optional.empty());
+
+        Assertions.assertThatThrownBy(() -> clientService.deleteClientById(1L))
+                .isInstanceOf(ClientDoesNotExistException.class);
+    }
+
+    @Test
+    public void editClientUpdatesClient() {
+        ClientCreationRequest request = clientCreationRequest(null, "John", "Doe");
+        ClientEntity clientEntity = clientEntity(null, "Jane", "Doe");
+
+        Client expectedClient = clientDomain(null, "Jane", "Doe");
+        when(clientRepository.save(clientEntity)).thenReturn(clientEntity);
+        
+        Client editedClient = clientService.editClient(request, clientCreationRequest(null, "Jane", "Doe"));
+
+        Assertions.assertThat(editedClient).isEqualTo(expectedClient); 
     }
 }

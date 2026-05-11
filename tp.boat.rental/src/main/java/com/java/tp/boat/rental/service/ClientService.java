@@ -1,7 +1,6 @@
 package com.java.tp.boat.rental.service;
 
 import java.util.ArrayList;
-import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -42,9 +41,9 @@ public class ClientService {
     }
 
     public Client deleteClientById(Long id) {
-        Optional<ClientEntity> clientToBeDeleted = clientRepository.findById(id);
-        clientRepository.delete(clientToBeDeleted.get());
-        return clientToBeDeleted.map(clientMapper::toDomainFromEntity).orElseThrow(() -> new ClientDoesNotExistException(String.format("No client associated with id %d", id)));
+        ClientEntity clientToBeDeleted = clientRepository.findById(id).orElseThrow(() -> new ClientDoesNotExistException(String.format("No client associated with id %d", id)));
+        clientRepository.delete(clientToBeDeleted);
+        return clientMapper.toDomainFromEntity(clientToBeDeleted);
     }
 
     public Client editClient(ClientCreationRequest existingClientRequest, ClientCreationRequest newClientRequest) {
