@@ -11,10 +11,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.RequestEntity;
 
-import com.java.tp.boat.rental.model.business.Boat;
-import com.java.tp.boat.rental.model.business.Client;
+import com.java.tp.boat.rental.exceptions.reservation.ReservationForTooManyPeopleException;
 import com.java.tp.boat.rental.model.business.Reservation;
 import com.java.tp.boat.rental.model.entity.BoatEntity;
 import com.java.tp.boat.rental.model.entity.BoatTypes;
@@ -30,7 +28,6 @@ import com.java.tp.boat.rental.utils.mappers.ReservationMapper;
 
 import java.sql.Date;
 import java.time.LocalDate;
-import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
 public class ReservationTest {
@@ -132,5 +129,38 @@ public class ReservationTest {
 
         Assertions.assertThat(reservations.size() == 1);
         Assertions.assertThat(reservation.getRid()).isEqualTo(1L);
+        Assertions.assertThat(reservation.getClient().getCid()).isEqualTo(1L);
+        Assertions.assertThat(reservation.getBoat().getBid()).isEqualTo(1L);
     }
+
+    @Test
+    public void createReservationWithTooManyPeopleThrowsException() {
+        ReservationCreationRequest request = new ReservationCreationRequest();
+        request.setCid(1L); request.setBid(1L); request.setAmountOfPeople(boats.get(0).getMaxCapacity() + 1); // too many people
+        request.setStartTime(Date.valueOf(LocalDate.now().plusDays(1)));
+        request.setEndTime(Date.valueOf(LocalDate.now().plusDays(2))); // good for now
+
+        Reservation expectedReservation = new Reservation();
+        expectedReservation.setClient(clientMapper.toDomainFromEntity(clients.get(0)));
+        expectedReservation.setBoat(boatMapper.toDomainFromEntity(boats.get(0)));
+        expectedReservation.setAmountOfPeople(request.getAmountOfPeople());
+        expectedReservation.setStartTime(request.getStartTime());
+        expectedReservation.setEndTime(request.getEndTime());
+
+        ReservationEntity reservationEntity = new ReservationEntity();
+        reservationEntity.setRid(1L); 
+        reservationEntity.setCid(clients.get(0)); 
+        reservationEntity.setBid(boats.get(0));
+        reservationEntity.setAmountOfPeople(request.getAmountOfPeople()); 
+        reservationEntity.setStartTime(request.getStartTime()); 
+        reservationEntity.setEndTime(request.getEndTime());
+
+        // mocking the things that are called
+        when(clientService.getClientById(1L)).thenReturn(clientMapper.toDomainFromEntity(clients.get(0)));
+        when(boatService.getBoatById(1L)).thenReturn(boatMapper.toDomainFromEntity(boats.get(0)));
+
+        Assertions.assertThatExceptionOfType(ReservationForTooManyPeopleException.class).isThrownBy(() -> reservationService.createReservation(request));
+    }
+
+    
 }
